@@ -1,0 +1,15 @@
+__pycache__
+*.ipynb
+environment.yml
+.coverage
+htmlcov/
+*.egg-info/
+env/
+.vscode/
+*.zip
+*.__pycache__
+*.data
+*.vector_cache
+*.pt
+setup.json
+*.log
