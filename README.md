@@ -8,6 +8,6 @@ Link to data: [Dataset](https://www.kaggle.com/c/sentiment-analysis-on-movie-rev
 
 | Model | Notebook | Background |
 |:------| :------:| :----:|
-| Bag-of-Words | [notebook](https://github.com/pbmstrk/Sentiment-Analysis/blob/master/notebooks/bog/Bag_of_Words.ipynb) | [background](https://github.com/pbmstrk/Sentiment-Analysis/blob/master/notebooks/bog/) |
-| Bag-of-Words using pre-trained word embeddings ([GloVe](https://nlp.stanford.edu/projects/glove/)) | [notebook](https://github.com/pbmstrk/Sentiment-Analysis/blob/master/notebooks/bog/Bag_of_Words_Pretrained.ipynb) | - |
+| Bag-of-Words | [notebook](https://nbviewer.jupyter.org/github/pbmstrk/Sentiment-Analysis/blob/master/notebooks/bog/Bag_of_Words.ipynb) | [background](https://github.com/pbmstrk/Sentiment-Analysis/blob/master/notebooks/bog/) |
+| Bag-of-Words using pre-trained word embeddings ([GloVe](https://nlp.stanford.edu/projects/glove/)) | [notebook](https://nbviewer.jupyter.org/github/pbmstrk/Sentiment-Analysis/blob/master/notebooks/bog/Bag_of_Words_Pretrained.ipynb) | - |
 | LSTM | [notebook](https://github.com/pbmstrk/Sentiment-Analysis/blob/master/notebooks/sequential/LSTM.ipynb) | [background](https://github.com/pbmstrk/Sentiment-Analysis/tree/master/notebooks/sequential/) |
