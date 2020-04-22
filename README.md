@@ -1,4 +1,4 @@
-# Sentiment-Analysis (currently being updated)
+# dl-models(currently being updated)
 
 Repository containing implementations of various models for sentiment analysis.
 
