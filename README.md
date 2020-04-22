@@ -6,8 +6,8 @@ Repository containing implementations of various models for sentiment analysis.
 
 Link to data: [Dataset](https://www.kaggle.com/c/sentiment-analysis-on-movie-reviews)
 
-| Model | Notebook | Colab | Background |
-|:------| :------:| :----:| :----:|
-| Bag-of-Words | [notebook](https://nbviewer.jupyter.org/github/pbmstrk/Sentiment-Analysis/blob/master/notebooks/bog/Bag_of_Words.ipynb) |  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/pbmstrk/Sentiment-Analysis/blob/master/notebooks/bog/Bag_of_Words.ipynb)| [background](https://github.com/pbmstrk/Sentiment-Analysis/blob/master/notebooks/bog/) | 
-| Bag-of-Words using pre-trained word embeddings ([GloVe](https://nlp.stanford.edu/projects/glove/)) | [notebook](https://nbviewer.jupyter.org/github/pbmstrk/Sentiment-Analysis/blob/master/notebooks/bog/Bag_of_Words_Pretrained.ipynb) | | - |
-| LSTM | [notebook](https://github.com/pbmstrk/Sentiment-Analysis/blob/master/notebooks/sequential/LSTM.ipynb) | | [background](https://github.com/pbmstrk/Sentiment-Analysis/tree/master/notebooks/sequential/) |
+| Model | Notebook | Colab | 
+|:------| :------:| :----:| 
+| Bag-of-Words | [notebook](https://nbviewer.jupyter.org/github/pbmstrk/Sentiment-Analysis/blob/master/models/bog/Bag_of_Words.ipynb) |  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/pbmstrk/Sentiment-Analysis/blob/master/models/bog/Bag_of_Words.ipynb)|
+| Bag-of-Words using pre-trained word embeddings ([GloVe](https://nlp.stanford.edu/projects/glove/)) | [notebook](https://nbviewer.jupyter.org/github/pbmstrk/Sentiment-Analysis/blob/master/models/bog_pretrained/Bag_of_Words_Pretrained.ipynb) | 
+| LSTM | [notebook](https://nbviewer.jupyter.org/github/pbmstrk/Sentiment-Analysis/blob/master/models/lstm/LSTM.ipynb) | 
