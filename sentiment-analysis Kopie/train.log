@@ -1,0 +1,219 @@
+2020-06-14 11:58:22,289:INFO: Retrieving dataset
+2020-06-14 12:02:22,721:INFO: Retrieving dataset
+2020-06-14 12:03:45,034:INFO: Retrieving dataset
+2020-06-14 12:04:13,201:INFO: Retrieving dataset
+2020-06-14 12:05:08,684:INFO: Retrieving dataset
+2020-06-14 12:05:56,376:INFO: Retrieving dataset
+2020-06-14 12:05:58,560:INFO: Downloading file trainDevTestTrees_PTB.zip to .data/sst/trainDevTestTrees_PTB.zip.
+2020-06-14 12:05:59,903:INFO: File .data/sst/trainDevTestTrees_PTB.zip downloaded.
+2020-06-14 12:06:55,239:INFO: Retrieving dataset
+2020-06-14 12:15:05,989:INFO: Retrieving dataset
+2020-06-14 12:20:18,699:INFO: Retrieving dataset
+2020-06-14 12:20:36,172:INFO: Retrieving dataset
+2020-06-14 12:20:41,734:INFO: Building vocab
+2020-06-14 12:26:43,227:INFO: Retrieving dataset
+2020-06-14 12:26:49,936:INFO: Building vocab
+2020-06-14 12:26:49,986:INFO: Constructing dataloaders
+2020-06-14 12:33:09,841:INFO: Retrieving dataset
+2020-06-14 12:33:16,907:INFO: Building vocab
+2020-06-14 12:33:16,961:INFO: Constructing dataloaders
+2020-06-14 12:33:17,119:INFO: Initialising model
+2020-06-14 12:34:51,899:INFO: Retrieving dataset
+2020-06-14 12:34:58,142:INFO: Building vocab
+2020-06-14 12:34:58,203:INFO: Constructing dataloaders
+2020-06-14 12:34:58,333:INFO: Initialising model
+2020-06-14 12:36:09,591:INFO: Retrieving dataset
+2020-06-14 12:36:17,087:INFO: Building vocab
+2020-06-14 12:36:17,147:INFO: Constructing dataloaders
+2020-06-14 12:36:17,280:INFO: Initialising model
+2020-06-14 12:36:42,871:INFO: Retrieving dataset
+2020-06-14 12:36:48,759:INFO: Building vocab
+2020-06-14 12:36:48,814:INFO: Constructing dataloaders
+2020-06-14 12:36:48,947:INFO: Initialising model
+2020-06-14 12:37:35,455:INFO: Retrieving dataset
+2020-06-14 12:37:41,610:INFO: Building vocab
+2020-06-14 12:37:41,669:INFO: Constructing dataloaders
+2020-06-14 12:37:41,800:INFO: Initialising model
+2020-06-14 12:38:50,246:INFO: Retrieving dataset
+2020-06-14 12:38:56,068:INFO: Building vocab
+2020-06-14 12:38:56,120:INFO: Constructing dataloaders
+2020-06-14 12:38:56,254:INFO: Initialising model
+2020-06-14 12:39:50,165:INFO: Retrieving dataset
+2020-06-14 12:39:56,846:INFO: Building vocab
+2020-06-14 12:39:56,903:INFO: Constructing dataloaders
+2020-06-14 12:39:57,065:INFO: Initialising model
+2020-06-14 12:41:14,929:INFO: Retrieving dataset
+2020-06-14 12:41:22,138:INFO: Building vocab
+2020-06-14 12:41:22,198:INFO: Constructing dataloaders
+2020-06-14 12:41:22,337:INFO: Initialising model
+2020-06-14 12:44:11,150:INFO: Retrieving dataset
+2020-06-14 12:44:17,646:INFO: Building vocab
+2020-06-14 12:44:17,699:INFO: Constructing dataloaders
+2020-06-14 12:44:18,419:INFO: Initialising model
+2020-06-14 12:48:55,633:INFO: Retrieving dataset
+2020-06-14 12:49:02,357:INFO: Building vocab
+2020-06-14 12:49:02,406:INFO: Constructing dataloaders
+2020-06-14 12:49:02,589:INFO: Initialising model
+2020-06-14 12:50:51,589:INFO: Retrieving dataset
+2020-06-14 12:50:57,697:INFO: Building vocab
+2020-06-14 12:50:57,745:INFO: Constructing dataloaders
+2020-06-14 12:50:57,886:INFO: Initialising model
+2020-06-14 12:55:05,308:INFO: Retrieving dataset
+2020-06-14 12:55:11,786:INFO: Building vocab
+2020-06-14 12:55:11,834:INFO: Constructing dataloaders
+2020-06-14 12:55:11,963:INFO: Downloading embeddings
+2020-06-14 12:55:11,963:INFO: Downloading vectors from http://nlp.stanford.edu/data/glove.42B.300d.zip
+2020-06-14 13:10:34,992:INFO: Extracting vectors into .vector_cache
+2020-06-14 13:11:22,734:INFO: Loading vectors from .vector_cache/glove.42B.300d.txt
+2020-06-14 13:15:32,589:INFO: Saving vectors to .vector_cache/glove.42B.300d.txt.pt
+2020-06-14 13:15:54,773:INFO: Initialising model
+2020-06-14 13:16:33,328:INFO: Retrieving dataset
+2020-06-14 13:16:39,599:INFO: Building vocab
+2020-06-14 13:16:39,650:INFO: Constructing dataloaders
+2020-06-14 13:16:39,784:INFO: Downloading embeddings
+2020-06-14 13:16:39,784:INFO: Loading vectors from .vector_cache/glove.42B.300d.txt.pt
+2020-06-14 13:16:44,291:INFO: Initialising model
+2020-06-14 13:19:31,573:INFO: Retrieving dataset
+2020-06-14 13:19:37,568:INFO: Building vocab
+2020-06-14 13:19:37,616:INFO: Constructing dataloaders
+2020-06-14 13:19:37,746:INFO: Downloading embeddings
+2020-06-14 13:19:37,747:INFO: Loading vectors from .vector_cache/glove.42B.300d.txt.pt
+2020-06-14 13:20:26,770:INFO: Retrieving dataset
+2020-06-14 13:20:32,835:INFO: Building vocab
+2020-06-14 13:20:32,883:INFO: Constructing dataloaders
+2020-06-14 13:20:33,019:INFO: Downloading embeddings
+2020-06-14 13:20:33,028:INFO: Loading vectors from .vector_cache/glove.42B.300d.txt.pt
+2020-06-14 13:20:38,365:INFO: Initialising model
+2020-06-14 13:20:58,072:INFO: Retrieving dataset
+2020-06-14 13:21:03,971:INFO: Building vocab
+2020-06-14 13:21:04,019:INFO: Constructing dataloaders
+2020-06-14 13:21:04,146:INFO: Downloading embeddings
+2020-06-14 13:21:04,146:INFO: Loading vectors from .vector_cache/glove.42B.300d.txt.pt
+2020-06-14 13:21:09,183:INFO: Initialising model
+2020-06-14 13:21:52,149:INFO: Retrieving dataset
+2020-06-14 13:21:58,593:INFO: Building vocab
+2020-06-14 13:21:58,673:INFO: Constructing dataloaders
+2020-06-14 13:21:58,842:INFO: Downloading embeddings
+2020-06-14 13:21:58,842:INFO: Loading vectors from .vector_cache/glove.42B.300d.txt.pt
+2020-06-14 13:22:04,213:INFO: Initialising model
+2020-06-14 13:28:37,740:INFO: Device is set to: cpu
+2020-06-14 13:28:37,741:INFO: Retrieving dataset
+2020-06-14 13:28:43,760:INFO: Building vocab
+2020-06-14 13:28:43,808:INFO: Constructing dataloaders
+2020-06-14 13:28:43,937:INFO: Downloading embeddings
+2020-06-14 13:28:43,938:INFO: Loading vectors from .vector_cache/glove.42B.300d.txt.pt
+2020-06-14 13:28:50,365:INFO: Initialising model
+2020-06-14 13:36:17,466:INFO: Device is set to: cpu
+2020-06-14 13:36:17,466:INFO: Retrieving dataset
+2020-06-14 13:36:23,563:INFO: Building vocab
+2020-06-14 13:36:23,610:INFO: Constructing dataloaders
+2020-06-14 13:36:23,746:INFO: Downloading embeddings
+2020-06-14 13:36:23,746:INFO: Loading vectors from .vector_cache/glove.42B.300d.txt.pt
+2020-06-14 13:36:30,070:INFO: Initialising model
+2020-06-14 13:40:51,595:INFO: Device is set to: cpu
+2020-06-14 13:40:51,596:INFO: Retrieving dataset
+2020-06-14 13:40:57,786:INFO: Building vocab
+2020-06-14 13:40:57,834:INFO: Downloading embeddings
+2020-06-14 13:40:57,835:INFO: Loading vectors from .vector_cache/glove.42B.300d.txt.pt
+2020-06-14 13:41:04,399:INFO: Constructing dataloaders
+2020-06-14 13:41:04,407:INFO: Initialising model
+2020-06-14 13:43:00,292:INFO: Device is set to: cpu
+2020-06-14 13:43:00,292:INFO: Retrieving dataset
+2020-06-14 13:43:06,606:INFO: Building vocab
+2020-06-14 13:43:06,656:INFO: Downloading embeddings
+2020-06-14 13:43:06,656:INFO: Loading vectors from .vector_cache/glove.42B.300d.txt.pt
+2020-06-14 13:43:13,558:INFO: Constructing dataloaders
+2020-06-14 13:43:13,567:INFO: Initialising model
+2020-06-14 14:22:33,242:INFO: Device is set to: cpu
+2020-06-14 14:22:33,243:INFO: Retrieving dataset
+2020-06-14 14:22:39,923:INFO: Building vocab
+2020-06-14 14:22:39,964:INFO: Downloading embeddings
+2020-06-14 14:22:39,965:INFO: Loading vectors from .vector_cache/glove.42B.300d.txt.pt
+2020-06-14 14:22:48,424:INFO: Constructing dataloaders
+2020-06-14 14:22:48,431:INFO: Initialising model
+2020-06-14 14:24:12,748:INFO: Device is set to: cpu
+2020-06-14 14:24:12,748:INFO: Retrieving dataset
+2020-06-14 14:24:18,982:INFO: Building vocab
+2020-06-14 14:24:19,026:INFO: Downloading embeddings
+2020-06-14 14:24:19,026:INFO: Loading vectors from .vector_cache/glove.42B.300d.txt.pt
+2020-06-14 14:24:25,389:INFO: Constructing dataloaders
+2020-06-14 14:24:25,391:INFO: Initialising model
+2020-06-14 14:25:23,233:INFO: Device is set to: cpu
+2020-06-14 14:25:23,234:INFO: Retrieving dataset
+2020-06-14 14:25:29,207:INFO: Building vocab
+2020-06-14 14:25:29,251:INFO: Downloading embeddings
+2020-06-14 14:25:29,251:INFO: Loading vectors from .vector_cache/glove.42B.300d.txt.pt
+2020-06-14 14:25:35,252:INFO: Constructing dataloaders
+2020-06-14 14:25:35,255:INFO: Initialising model
+2020-06-14 14:29:31,948:INFO: Device is set to: cpu
+2020-06-14 14:29:31,948:INFO: Retrieving dataset
+2020-06-14 14:29:37,906:INFO: Building vocab
+2020-06-14 14:29:37,950:INFO: Downloading embeddings
+2020-06-14 14:29:37,953:INFO: Loading vectors from .vector_cache/glove.42B.300d.txt.pt
+2020-06-14 14:29:45,251:INFO: Constructing dataloaders
+2020-06-14 14:29:45,261:INFO: Initialising model
+2020-06-14 14:32:06,024:INFO: Device is set to: cpu
+2020-06-14 14:32:06,024:INFO: Retrieving dataset
+2020-06-14 14:32:13,071:INFO: Building vocab
+2020-06-14 14:32:13,116:INFO: Downloading embeddings
+2020-06-14 14:32:13,117:INFO: Loading vectors from .vector_cache/glove.42B.300d.txt.pt
+2020-06-14 14:32:20,108:INFO: Constructing dataloaders
+2020-06-14 14:32:20,116:INFO: Initialising model
+2020-06-14 14:43:21,491:INFO: Device is set to: cpu
+2020-06-14 14:43:21,492:INFO: Retrieving dataset
+2020-06-14 14:43:28,851:INFO: Building vocab
+2020-06-14 14:43:28,895:INFO: Downloading embeddings
+2020-06-14 14:43:28,896:INFO: Loading vectors from .vector_cache/glove.42B.300d.txt.pt
+2020-06-14 14:46:37,141:INFO: Device is set to: cpu
+2020-06-14 14:46:37,141:INFO: Retrieving dataset
+2020-06-14 14:46:43,709:INFO: Building vocab
+2020-06-14 14:46:43,754:INFO: Downloading embeddings
+2020-06-14 14:46:43,755:INFO: Loading vectors from .vector_cache/glove.42B.300d.txt.pt
+2020-06-14 14:48:25,146:INFO: Device is set to: cpu
+2020-06-14 14:48:25,146:INFO: Retrieving dataset
+2020-06-14 14:48:31,063:INFO: Building vocab
+2020-06-14 14:48:31,105:INFO: Downloading embeddings
+2020-06-14 14:48:31,106:INFO: Loading vectors from .vector_cache/glove.42B.300d.txt.pt
+2020-06-14 14:48:37,427:INFO: Constructing dataloaders
+2020-06-14 14:51:51,857:INFO: Device is set to: cpu
+2020-06-14 14:51:51,857:INFO: Retrieving dataset
+2020-06-14 14:51:58,030:INFO: Building vocab
+2020-06-14 14:51:58,074:INFO: Downloading embeddings
+2020-06-14 14:51:58,074:INFO: Loading vectors from .vector_cache/glove.42B.300d.txt.pt
+2020-06-14 14:52:03,979:INFO: Constructing dataloaders
+2020-06-14 14:52:03,982:INFO: Initialising model
+2020-06-14 14:53:24,893:INFO: Device is set to: cpu
+2020-06-14 14:53:24,893:INFO: Retrieving dataset
+2020-06-14 14:53:30,814:INFO: Building vocab
+2020-06-14 14:53:30,855:INFO: Downloading embeddings
+2020-06-14 14:53:30,855:INFO: Loading vectors from .vector_cache/glove.42B.300d.txt.pt
+2020-06-14 14:53:36,862:INFO: Constructing dataloaders
+2020-06-14 14:53:36,866:INFO: Initialising model
+2020-06-14 14:56:24,052:INFO: Device is set to: cpu
+2020-06-14 14:56:24,052:INFO: Retrieving dataset
+2020-06-14 14:56:29,985:INFO: Building vocab
+2020-06-14 14:56:30,031:INFO: Downloading embeddings
+2020-06-14 14:56:30,031:INFO: Loading vectors from .vector_cache/glove.42B.300d.txt.pt
+2020-06-14 14:56:36,350:INFO: Constructing dataloaders
+2020-06-14 14:56:36,356:INFO: Initialising model
+2020-06-14 14:59:56,236:INFO: Device is set to: cpu
+2020-06-14 14:59:56,236:INFO: Retrieving dataset
+2020-06-14 15:00:02,543:INFO: Building vocab
+2020-06-14 15:00:02,585:INFO: Downloading embeddings
+2020-06-14 15:00:02,585:INFO: Loading vectors from .vector_cache/glove.42B.300d.txt.pt
+2020-06-14 15:00:09,624:INFO: Constructing dataloaders
+2020-06-14 15:00:09,631:INFO: Initialising model
+2020-06-14 15:00:40,597:INFO: Device is set to: cpu
+2020-06-14 15:00:40,598:INFO: Retrieving dataset
+2020-06-14 15:00:46,763:INFO: Building vocab
+2020-06-14 15:00:46,807:INFO: Downloading embeddings
+2020-06-14 15:00:46,808:INFO: Loading vectors from .vector_cache/glove.42B.300d.txt.pt
+2020-06-14 15:00:52,561:INFO: Constructing dataloaders
+2020-06-14 15:00:52,563:INFO: Initialising model
+2020-06-14 15:01:29,354:INFO: Device is set to: cpu
+2020-06-14 15:01:29,354:INFO: Retrieving dataset
+2020-06-14 15:01:35,261:INFO: Building vocab
+2020-06-14 15:01:35,302:INFO: Downloading embeddings
+2020-06-14 15:01:35,302:INFO: Loading vectors from .vector_cache/glove.42B.300d.txt.pt
+2020-06-14 15:01:41,056:INFO: Constructing dataloaders
+2020-06-14 15:01:41,069:INFO: Initialising model
