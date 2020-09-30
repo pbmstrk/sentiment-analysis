@@ -1,4 +1,6 @@
 __pycache__
+*.egg-info/
+envs/
 .vscode/
 *.zip
 *.__pycache__
