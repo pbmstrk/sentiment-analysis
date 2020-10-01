@@ -3,7 +3,7 @@ import pytest
 from torch.utils.data import DataLoader, TensorDataset
 import pytorch_lightning as pl
 
-from sentiment_analysis.models import RNF
+from sentiment_analysis.models import AttentionLSTM
 
 
 def create_fake_data(low, high, dims):
@@ -11,25 +11,29 @@ def create_fake_data(low, high, dims):
     return torch.randint(low, high, dims)
 
 
-def create_test_dataloader_rnf(num_examples, batch_size, input_size, seq_len):
+def create_test_dataloader_lstm(num_examples, batch_size, input_size, seq_len):
     inputs = create_fake_data(0, input_size, (num_examples, seq_len))
     targets = create_fake_data(0, 2, (num_examples,))
+    seqlengths = seq_len * torch.ones((num_examples,))
 
-    dataset = TensorDataset(inputs, targets.float())
+    dataset = TensorDataset(inputs, targets.float(), seqlengths)
     return DataLoader(dataset, batch_size=batch_size)
 
 
-class TestRNF:
+class TestAttentionLSTM:
     def test_output_shape(self):
         input_size = 100
         batch_size = 32
         seq_len = 15
         inputs = create_fake_data(0, input_size, (batch_size, seq_len))
         targets = None
+        seqlengths = create_fake_data(5, seq_len, (batch_size-1,))
+        # need to ensure we have sequence of max_len
+        seqlengths = torch.cat((torch.tensor([seq_len]), seqlengths))
 
-        batch = (inputs, targets)
+        batch = (inputs, targets, seqlengths)
 
-        model = RNF(input_size=input_size)
+        model = AttentionLSTM(input_size=input_size)
 
         assert model(batch).shape == torch.Size([batch_size])
 
@@ -42,7 +46,7 @@ class TestRNF:
 
     def test_forward_backward(self):
 
-        data_loader = create_test_dataloader_rnf(
+        data_loader = create_test_dataloader_lstm(
             num_examples=100, batch_size=32, input_size=100, seq_len=15
         )
         trainer = pl.Trainer(
@@ -53,8 +57,8 @@ class TestRNF:
             logger=False,
         )
 
-        model_before = RNF(input_size=100)
-        model_after = RNF(input_size=100)
+        model_before = AttentionLSTM(input_size=100)
+        model_after = AttentionLSTM(input_size=100)
         model_after.load_state_dict(model_before.state_dict())
 
         assert self._parameters_are_eq(
@@ -70,7 +74,7 @@ class TestRNF:
     @pytest.mark.skipif(not torch.cuda.is_available(), reason="Test requires GPU")
     def test_forward_backward_gpu(self):
 
-        data_loader = create_test_dataloader_rnf(
+        data_loader = create_test_dataloader_lstm(
             num_examples=100, batch_size=32, input_size=100, seq_len=15
         )
         trainer = pl.Trainer(
@@ -82,8 +86,8 @@ class TestRNF:
             logger=False,
         )
 
-        model_before = RNF(input_size=100)
-        model_after = RNF(input_size=100)
+        model_before = AttentionLSTM(input_size=100)
+        model_after = AttentionLSTM(input_size=100)
         model_after.load_state_dict(model_before.state_dict())
 
         assert self._parameters_are_eq(

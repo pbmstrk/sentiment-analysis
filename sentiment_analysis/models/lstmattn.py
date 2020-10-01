@@ -32,7 +32,7 @@ class Attention(nn.Module):
 
 
 class AttentionLSTM(BaseClassifier):
-    def __init__(self, input_size, embed_mat):
+    def __init__(self, input_size, embed_mat=None):
 
         super().__init__()
 
@@ -58,7 +58,7 @@ class AttentionLSTM(BaseClassifier):
         # inputs: [BATCH_SIZE, LONGEST_SEQ]
 
         mask = self._create_mask(inputs)
-        # mask: [BATCH_SIZE, 1, LONGEST_SEQ]
+        # mask: [BATCH_SIZE, LONGEST_SEQ]
 
         embeds = self.embedding(inputs.long())
         # embeds: [BATCH_SIZE, LONGEST_SEQ, EMBED_DIM]
@@ -68,7 +68,7 @@ class AttentionLSTM(BaseClassifier):
         inputs = pack_padded_sequence(
             embeds, seqlengths, enforce_sorted=False, batch_first=True
         )
-        # inputs: [SUM(SEQ_LENGTHS), EMBED_DIM)
+        # inputs: [SUM(SEQ_LENGTHS), EMBED_DIM]
 
         packed_outputs, _ = self.lstm(inputs)
         # packed_outputs: [SUM(SEQ_LENGTHS), N_DIR * LSTM_OUT]

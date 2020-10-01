@@ -48,7 +48,7 @@ class TestCNN:
         )
         trainer = pl.Trainer(
             progress_bar_refresh_rate=0,
-            max_steps=100,
+            max_steps=5,
             num_sanity_val_steps=0,
             checkpoint_callback=False,
             logger=False,
@@ -77,7 +77,7 @@ class TestCNN:
         trainer = pl.Trainer(
             gpus=1,
             progress_bar_refresh_rate=0,
-            max_steps=100,
+            max_steps=5,
             num_sanity_val_steps=0,
             checkpoint_callback=False,
             logger=False,
