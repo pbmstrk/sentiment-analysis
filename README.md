@@ -1,7 +1,4 @@
-# Sentiment Analysis
-
-[![Build Status](https://travis-ci.org/pbmstrk/sentiment-analysis.svg?branch=master)](https://travis-ci.org/pbmstrk/sentiment-analysis)
-
+# Sentiment Analysis  [![Build Status](https://travis-ci.org/pbmstrk/sentiment-analysis.svg?branch=master)](https://travis-ci.org/pbmstrk/sentiment-analysis)
 
 
 
