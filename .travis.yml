@@ -19,7 +19,7 @@ install:
   - conda install pytorch torchtext cpuonly -c pytorch
   - conda install pytorch-lightning -c conda-forge
   - conda install -c conda-forge spacy
-  - python -m spacy en
+  - python -m download spacy en
   - pip install nltk
   - python setup.py install
 
