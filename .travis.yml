@@ -18,10 +18,11 @@ install:
   - conda activate test-environment
   - conda install pytorch torchtext cpuonly -c pytorch
   - conda install pytorch-lightning -c conda-forge
-  - conda install -c conda-forge spacy
+  - conda install -c conda-forge 
   - python -m spacy download en
-  - pip install nltk
-  - python setup.py install
+  - pip install nltk 
+  - pip install pytest
+  - pip install .
 
 script:
   - pytest tests/
