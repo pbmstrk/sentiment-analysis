@@ -105,7 +105,7 @@ class SSTDataModuleBase(pl.LightningDataModule):
             TEXT,
             LABEL,
             filter_pred=lambda ex: ex.label != "neutral",
-            train_subtrees=train_subtrees
+            train_subtrees=train_subtrees,
         )
 
         return train_data, val_data, test_data

@@ -21,7 +21,7 @@ def create_test_dataloader_lstm(num_examples, batch_size, input_size, seq_len):
 
 
 class TestLSTM:
-    def test_output_shape_lstm(self):
+    def test_output_shape(self):
         input_size = 100
         batch_size = 32
         seq_len = 15
@@ -69,9 +69,7 @@ class TestLSTM:
             list(model_before.parameters()), list(model_after.parameters())
         )
 
-    @pytest.mark.skipif(
-        not torch.cuda.is_available(), reason="test requires GPU machine"
-    )
+    @pytest.mark.skipif(not torch.cuda.is_available(), reason="Test requires GPU")
     def test_forward_backward_gpu(self):
 
         data_loader = create_test_dataloader_lstm(
