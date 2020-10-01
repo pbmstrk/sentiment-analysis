@@ -96,7 +96,7 @@ class SSTDataModuleBase(pl.LightningDataModule):
 
         return text, label
 
-    def setup(self, stage=None, min_freq=3):
+    def _download_data(self, train_subtrees):
 
         TEXT = torchtext.data.Field(tokenize="spacy", lower=True)
         LABEL = torchtext.data.Field(sequential=False)
@@ -105,8 +105,14 @@ class SSTDataModuleBase(pl.LightningDataModule):
             TEXT,
             LABEL,
             filter_pred=lambda ex: ex.label != "neutral",
-            train_subtrees=True,
+            train_subtrees=train_subtrees
         )
+
+        return train_data, val_data, test_data
+
+    def setup(self, stage=None, min_freq=3, train_subtrees=True):
+
+        train_data, val_data, test_data = self._download_data(train_subtrees)
 
         vocab_counter = self._build_vocab(train_data)
         self._build_encoding(vocab_counter, min_freq)

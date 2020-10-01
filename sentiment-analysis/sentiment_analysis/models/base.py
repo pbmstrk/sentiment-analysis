@@ -17,7 +17,7 @@ class BaseClassifier(pl.LightningModule):
 
     def training_step(self, batch, batch_idx):
 
-        x, y, offsets = batch
+        y = batch[1]
         y_hat = self(batch)
 
         # compute loss
@@ -40,7 +40,7 @@ class BaseClassifier(pl.LightningModule):
 
     def validation_step(self, batch, batch_idx):
 
-        x, y, offsets = batch
+        y = batch[1]
         y_hat = self(batch)
 
         # compute loss

@@ -1,9 +1,9 @@
 import torch
 import pytest
-from torch.utils.data import DataLoader, TensorDataset
 import pytorch_lightning as pl
 
-from sentiment_analysis.models import SentimentLSTM
+from torch.utils.data import DataLoader, TensorDataset
+from sentiment_analysis.models import TextCNN
 
 
 def create_fake_data(low, high, dims):
@@ -11,27 +11,26 @@ def create_fake_data(low, high, dims):
     return torch.randint(low, high, dims)
 
 
-def create_test_dataloader_lstm(num_examples, batch_size, input_size, seq_len):
+def create_test_dataloader_cnn(num_examples, batch_size, input_size, seq_len):
     inputs = create_fake_data(0, input_size, (num_examples, seq_len))
     targets = create_fake_data(0, 2, (num_examples,))
-    seqlengths = create_fake_data(5, seq_len, (num_examples,))
 
-    dataset = TensorDataset(inputs, targets.float(), seqlengths)
+    dataset = TensorDataset(inputs, targets.float())
     return DataLoader(dataset, batch_size=batch_size)
 
 
-class TestLSTM:
-    def test_output_shape_lstm(self):
+class TestCNN:
+    def test_output_shape_cnn(self):
+
         input_size = 100
         batch_size = 32
         seq_len = 15
         inputs = create_fake_data(0, input_size, (batch_size, seq_len))
         targets = None
-        seqlengths = create_fake_data(5, seq_len, (batch_size,))
 
-        batch = (inputs, targets, seqlengths)
+        batch = (inputs, targets)
 
-        model = SentimentLSTM(input_size=input_size)
+        model = TextCNN(input_size=input_size)
 
         assert model(batch).shape == torch.Size([batch_size])
 
@@ -44,7 +43,7 @@ class TestLSTM:
 
     def test_forward_backward(self):
 
-        data_loader = create_test_dataloader_lstm(
+        data_loader = create_test_dataloader_cnn(
             num_examples=100, batch_size=32, input_size=100, seq_len=15
         )
         trainer = pl.Trainer(
@@ -55,8 +54,8 @@ class TestLSTM:
             logger=False,
         )
 
-        model_before = SentimentLSTM(input_size=100)
-        model_after = SentimentLSTM(input_size=100)
+        model_before = TextCNN(input_size=100)
+        model_after = TextCNN(input_size=100)
         model_after.load_state_dict(model_before.state_dict())
 
         assert self._parameters_are_eq(
@@ -69,12 +68,10 @@ class TestLSTM:
             list(model_before.parameters()), list(model_after.parameters())
         )
 
-    @pytest.mark.skipif(
-        not torch.cuda.is_available(), reason="test requires GPU machine"
-    )
+    @pytest.mark.skipif(not torch.cuda.is_available(), reason="Test requires GPU")
     def test_forward_backward_gpu(self):
 
-        data_loader = create_test_dataloader_lstm(
+        data_loader = create_test_dataloader_cnn(
             num_examples=100, batch_size=32, input_size=100, seq_len=15
         )
         trainer = pl.Trainer(
@@ -86,8 +83,8 @@ class TestLSTM:
             logger=False,
         )
 
-        model_before = SentimentLSTM(input_size=100)
-        model_after = SentimentLSTM(input_size=100)
+        model_before = TextCNN(input_size=100)
+        model_after = TextCNN(input_size=100)
         model_after.load_state_dict(model_before.state_dict())
 
         assert self._parameters_are_eq(
