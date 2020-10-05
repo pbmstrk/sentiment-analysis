@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from sentiment_analysis.models.base import BaseClassifier
+from text_classification.models.base import BaseClassifier
 
 
 class TextCNN(BaseClassifier):

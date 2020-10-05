@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.nn.utils.rnn import pack_padded_sequence
 
-from sentiment_analysis.models.base import BaseClassifier
+from text_classification.models.base import BaseClassifier
 
 
 class SentimentLSTM(BaseClassifier):

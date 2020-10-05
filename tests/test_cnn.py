@@ -3,7 +3,7 @@ import pytest
 import pytorch_lightning as pl
 
 from torch.utils.data import DataLoader, TensorDataset
-from sentiment_analysis.models import TextCNN
+from text_classification.models import TextCNN
 
 
 def create_fake_data(low, high, dims):

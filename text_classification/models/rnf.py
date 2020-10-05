@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import pytorch_lightning as pl
 
-from sentiment_analysis.models.base import BaseClassifier
+from text_classification.models.base import BaseClassifier
 
 
 class TimeDistributedLSTM(pl.LightningModule):

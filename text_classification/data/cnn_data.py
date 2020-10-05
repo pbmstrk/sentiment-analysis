@@ -1,7 +1,7 @@
 import torch
 import numpy as np
 
-from sentiment_analysis.data.base import SSTDataModuleBase
+from text_classification.data.base import SSTDataModuleBase
 from torch.utils.data import DataLoader
 from torch.nn.utils.rnn import pad_sequence
 

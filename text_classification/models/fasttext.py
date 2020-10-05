@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 
-from sentiment_analysis.models.base import BaseClassifier
+from text_classification.models.base import BaseClassifier
 
 
 class FastText(BaseClassifier):
