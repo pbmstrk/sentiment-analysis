@@ -1,4 +1,5 @@
 __pycache__
+*.ipynb
 environment.yml
 .coverage
 htmlcov/

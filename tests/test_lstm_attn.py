@@ -27,7 +27,7 @@ class TestAttentionLSTM:
         seq_len = 15
         inputs = create_fake_data(0, input_size, (batch_size, seq_len))
         targets = None
-        seqlengths = create_fake_data(5, seq_len, (batch_size-1,))
+        seqlengths = create_fake_data(5, seq_len, (batch_size - 1,))
         # need to ensure we have sequence of max_len
         seqlengths = torch.cat((torch.tensor([seq_len]), seqlengths))
 
