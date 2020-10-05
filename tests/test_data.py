@@ -1,4 +1,4 @@
-from sentiment_analysis.data import SSTDataModuleMLP
+from text_classification.data import SSTDataModuleMLP
 import numpy as np
 
 

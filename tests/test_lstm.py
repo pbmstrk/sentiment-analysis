@@ -3,7 +3,7 @@ import pytest
 from torch.utils.data import DataLoader, TensorDataset
 import pytorch_lightning as pl
 
-from sentiment_analysis.models import SentimentLSTM
+from text_classification.models import SentimentLSTM
 
 
 def create_fake_data(low, high, dims):
