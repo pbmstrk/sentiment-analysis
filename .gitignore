@@ -4,7 +4,7 @@ environment.yml
 .coverage
 htmlcov/
 *.egg-info/
-env/
+*env*
 .vscode/
 *.zip
 *.__pycache__
@@ -13,3 +13,4 @@ env/
 *.pt
 setup.json
 *.log
+*build/
