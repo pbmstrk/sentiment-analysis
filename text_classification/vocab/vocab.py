@@ -20,7 +20,7 @@ class Vocab:
     Example::
 
         # using MRDataset() as an example
-        >>> RNFModel = RNF(data=MRDataset(), min_freq=3)
+        >>> vocab = Vocab(data=MRDataset(), min_freq=3)
     """
 
 
