@@ -48,7 +48,7 @@ class DataModule(pl.LightningDataModule):
             raise ValueError
 
         return DataLoader(
-            self.train, batch_size=self.batch_size, collate_fn=self.encoder
+            self.val, batch_size=self.batch_size, collate_fn=self.encoder
         )
 
     def test_dataloader(self) -> DataLoader:
@@ -57,5 +57,5 @@ class DataModule(pl.LightningDataModule):
             raise ValueError
 
         return DataLoader(
-            self.train, batch_size=self.batch_size, collate_fn=self.encoder
+            self.test, batch_size=self.batch_size, collate_fn=self.encoder
         )

@@ -9,13 +9,24 @@ from typing import Optional
 
 
 class TimeDistributedLSTM(pl.LightningModule):
-    def __init__(self, input_dim: int, output_dim: int, time_axis: int):
+
+    def __init__(
+        self, 
+        input_dim: int, 
+        output_dim: int, 
+        time_axis: int,
+        dropout: float
+    ):
         super().__init__()
 
         self.input_dim = input_dim
         self.output_dim = output_dim
         self.time_axis = time_axis
-        self.lstm = nn.LSTM(self.input_dim, self.output_dim, batch_first=True)
+        self.dropout = dropout
+        self.lstm = nn.LSTM(self.input_dim, self.output_dim,
+                batch_first=True)
+
+        self.lstm_dropout = nn.Dropout2d(p=self.dropout)
 
     def forward(self, x):
 
@@ -33,7 +44,7 @@ class TimeDistributedLSTM(pl.LightningModule):
 
             _, (hidden_t, _) = self.lstm(x_input)
 
-            outputs[:, i, :] = hidden_t
+            outputs[:, i, :] = self.lstm_dropout(hidden_t)
 
         return outputs
 
@@ -84,6 +95,7 @@ class RNF(BaseClassifier):
         embed_dim: int = 300,
         hidden_dim: int = 300,
         embed_dropout: float = 0.4,
+        dropout: float = 0.4,
         embed_mat=None,
         embed_freeze: bool = False,
         lr: float = 0.001
@@ -97,6 +109,7 @@ class RNF(BaseClassifier):
         self.embed_dim = embed_dim
         self.hidden_dim = hidden_dim
         self.embed_dropout = embed_dropout
+        self.dropout = dropout
         self.embed_mat = embed_mat
         self.embed_freeze = embed_freeze
         self.lr = lr
@@ -110,17 +123,19 @@ class RNF(BaseClassifier):
             self.embedding.weight.requires_grad = False
 
         self.time_lstm = TimeDistributedLSTM(
-            self.embed_dim, self.hidden_dim, time_axis=1
+            self.embed_dim, self.hidden_dim, time_axis=1, dropout=self.dropout
         )
 
         self.fc = nn.Linear(self.hidden_dim, self.num_classes)
+
+        self.embed_dropout = nn.Dropout2d(p=self.embed_dropout)
 
     def forward(self, batch):
 
         inputs, _ = batch
         # inputs: [BATCH_SIZE, LONGEST_SEQ]
 
-        embedded = self.embedding(inputs)
+        embedded = self.embed_dropout(self.embedding(inputs))
         # embedded: [BATCH_SIZE, LONGEST_SEQ, EMBED_DIM]
 
         lstm_inputs = format_conv_input(
