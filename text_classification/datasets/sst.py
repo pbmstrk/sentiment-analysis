@@ -17,7 +17,7 @@ def SSTDataset(
     name: str = "sst",
     train_subtrees: bool = False,
     fine_grained: bool = False,
-    tokenizer: Union[Callable, str] = "spacy",
+    tokenizer: Union[BaseTokenizer, Callable] = SpacyTokenizer(),
     filter_func: Optional[Callable] = None,
 ):
 
@@ -53,14 +53,6 @@ def SSTDataset(
 
     dir_name = "trees"
 
-    if tokenizer == "spacy":
-        tok = SpacyTokenizer()
-    elif tokenizer == "simple":
-        tok = SimpleTokenizer()
-    else:
-        assert isinstance(tokenizer, BaseTokenizer)
-        tok = tokenizer
-
     # adapted from https://github.com/pytorch/text/blob/master/torchtext/datasets/sst.py#L34-L36
     prefix = "very " if fine_grained else ""
     label_map = {
@@ -87,7 +79,7 @@ def SSTDataset(
     # data: List of lists. Using map function to filter, tokenize and convert to list of Examples
     map_f = partial(
         map_list_to_example,
-        tokenizer=tok,
+        tokenizer=tokenizer,
         filter_func=filter_func,
         label_map=label_map,
     )
@@ -97,7 +89,7 @@ def SSTDataset(
         "name": name,
         "train_subtrees": train_subtrees,
         "fine_grained": fine_grained,
-        "tokenizer": tok.__str__() if isinstance(tok, BaseTokenizer) else None,
+        "tokenizer": tokenizer.__str__() if isinstance(tokenizer, BaseTokenizer) else None,
     }
 
     return (

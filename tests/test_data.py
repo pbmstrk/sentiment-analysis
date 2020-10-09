@@ -1,21 +1,57 @@
-from text_classification.data import SSTDataModuleMLP
-import numpy as np
+from text_classification.datasets import SSTDataset, MRDataset
+from text_classification.tokenizers import SpacyTokenizer, SimpleTokenizer
 
+
+def assert_size_sst(train, val, test):
+    true_train_size = 6920
+    true_val_size = 872
+    true_test_size = 1821
+
+    assert len(train) == true_train_size
+    assert len(val) == true_val_size
+    assert len(test) == true_test_size
+
+def assert_size_mr(data):
+    true_data_size = 10662
+
+    assert len(data) == true_data_size
 
 class TestData:
-    def test_encoding(self):
 
-        ds = SSTDataModuleMLP()
-        train_data, _, _ = ds._download_data(train_subtrees=False)
+    def test_sst(self):
 
-        ds.setup(min_freq=1, train_subtrees=False)
-        encoded_data = ds.train_dataloader().dataset
-        inv_enc = {v: k for k, v in ds.encoding.items()}
+        root = '.testdata'
 
-        ind = np.random.randint(0, len(train_data))
+        # test with default SpacyTokenizer
+        train, val, test = SSTDataset(filter_func=lambda x: x.label != 'neutral', root=root)
+        assert_size_sst(train, val, test)
+        assert train.attributes['tokenizer'] == SpacyTokenizer().__str__()
 
-        outputs = []
-        for key in encoded_data[ind][0]:
-            outputs.append(inv_enc[key.item()])
+        # test access
+        train[0]
 
-        assert outputs[1:-1] == train_data[ind].text
+        # test with simple and subtrees
+        train, val, test = SSTDataset(filter_func=lambda x: x.label != 'neutral', 
+                                root=root, tokenizer=SimpleTokenizer(), train_subtrees=True)
+        assert train.attributes['tokenizer'] == SimpleTokenizer().__str__()
+
+    def test_mr(self):
+
+        root = '.testdata'
+
+        # test with default SpacyTokenizer
+        mr_data = MRDataset(root=root)
+        assert_size_mr(mr_data)
+        assert mr_data.attributes['tokenizer'] == SpacyTokenizer().__str__()
+
+        # test access
+        mr_data[0]
+
+        mr_data = MRDataset(root=root, tokenizer=SimpleTokenizer()) 
+        assert_size_mr(mr_data)
+        assert mr_data.attributes['tokenizer'] == SimpleTokenizer().__str__()
+        
+
+
+
+        

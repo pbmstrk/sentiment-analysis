@@ -6,11 +6,11 @@ from spacy.lang.en import English
 class BaseTokenizer:
     @abstractmethod
     def __call__(self, x):
-        return
+        raise NotImplementedError
 
     @abstractmethod
     def __str__(self):
-        pass
+        raise NotImplementedError
 
 
 class SimpleTokenizer(BaseTokenizer):

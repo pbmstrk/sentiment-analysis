@@ -15,7 +15,7 @@ from ..utils import download_extract
 def MRDataset(
     root: str = ".data",
     name: str = "mr",
-    tokenizer: Union[Callable, str] = "spacy",
+    tokenizer: Union[Callable, str] = SpacyTokenizer(),
     filter_func: Optional[Callable] = None,
 ):
 
@@ -48,14 +48,6 @@ def MRDataset(
 
     dir_name = "rt-polaritydata"
 
-    if tokenizer == "spacy":
-        tok = SpacyTokenizer()
-    elif tokenizer == "simple":
-        tok = SimpleTokenizer()
-    else:
-        assert isinstance(tokenizer, BaseTokenizer)
-        tok = tokenizer
-
     # download and extract dataset
     url = DATASETS["mr"]
     download_extract(url, name, root=root)
@@ -67,10 +59,10 @@ def MRDataset(
 
     # get data from all files using defined parser
     pos = get_data_from_file(
-        os.path.join(root, name, dir_name, "rt-polarity.pos"), pos_parser
+        os.path.join(root, name, dir_name, "rt-polarity.pos"), pos_parser, errors='ignore'
     )
     neg = get_data_from_file(
-        os.path.join(root, name, dir_name, "rt-polarity.neg"), neg_parser
+        os.path.join(root, name, dir_name, "rt-polarity.neg"), neg_parser, errors='ignore'
     )
 
     all_examples = pos + neg
@@ -78,7 +70,7 @@ def MRDataset(
     # data: List of lists. Using map function to filter, tokenize and convert to list of Examples
     map_f = partial(
         map_list_to_example,
-        tokenizer=tok,
+        tokenizer=tokenizer,
         filter_func=filter_func,
         label_map=None,
     )
@@ -86,9 +78,7 @@ def MRDataset(
     # define attributes of the dataset. Can be passed to TextDataset instance.
     attributes = {
         "name": name,
-        "tokenizer": tok.__str__() if isinstance(tok, BaseTokenizer) else None,
+        "tokenizer": tokenizer.__str__() if isinstance(tokenizer, BaseTokenizer) else None,
     }
 
-    return (
-        TextDataset([x for x in map(map_f, all_examples) if x], attributes=attributes),
-    )
+    return TextDataset([x for x in map(map_f, all_examples) if x], attributes=attributes)
