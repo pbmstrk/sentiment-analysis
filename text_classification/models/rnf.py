@@ -66,6 +66,9 @@ class RNF(BaseClassifier):
         hidden_dim: Size of the output layer of the LSTM.
         embed_dropout: Dropout applied to the word embeddings
         embed_mat: Pre-trained word-embedddings. Size should match (input_size, embed_dim)
+        embed_freeze: Freeze embedding weights during training. For example, to keep pre-trained
+            vectors (e.g. GloVe) fixed during training
+        lr: learning rate of the optimizer.
 
     Example::
 
@@ -82,8 +85,10 @@ class RNF(BaseClassifier):
         hidden_dim: int = 300,
         embed_dropout: float = 0.4,
         embed_mat=None,
+        embed_freeze: bool = False,
+        lr: float = 0.001
     ):
-
+        # add freeze to embeds
         super().__init__()
 
         self.input_size = input_size
@@ -93,12 +98,16 @@ class RNF(BaseClassifier):
         self.hidden_dim = hidden_dim
         self.embed_dropout = embed_dropout
         self.embed_mat = embed_mat
+        self.embed_freeze = embed_freeze
+        self.lr = lr
 
         self.embedding = nn.Embedding(self.input_size, self.embed_dim, padding_idx=0)
         if self.embed_mat is not None:
             self.embedding = self.embedding.from_pretrained(
                 torch.from_numpy(self.embed_mat).float()
             )
+        if self.embed_freeze:
+            self.embedding.weight.requires_grad = False
 
         self.time_lstm = TimeDistributedLSTM(
             self.embed_dim, self.hidden_dim, time_axis=1
@@ -133,5 +142,5 @@ class RNF(BaseClassifier):
         return outputs.squeeze()
 
     def configure_optimizers(self):
-        optimizer = torch.optim.Adam(self.parameters(), lr=0.0001, weight_decay=1e-05)
+        optimizer = torch.optim.Adam(self.parameters(), lr=self.lr, weight_decay=1e-05)
         return optimizer
