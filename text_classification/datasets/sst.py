@@ -17,7 +17,7 @@ def SSTDataset(
     name: str = "sst",
     train_subtrees: bool = False,
     fine_grained: bool = False,
-    tokenizer: Union[BaseTokenizer, Callable] = SpacyTokenizer(),
+    tokenizer: Optional[Callable] = None,
     filter_func: Optional[Callable] = None,
 ):
 
@@ -34,9 +34,7 @@ def SSTDataset(
         name: Name of the folder within root directory to store data.
         train_subtrees: Include all subtrees in training set.
         fine_grained: Use fine-grained classification (5 classes).
-        tokenizer: Tokenizer function to tokenize strings into a list of tokens. Option between
-            "spacy" and "simple" to use a SpaCy and white-space tokenizer respectively.
-            Custom tokenizer can be used by passing a callable.
+        tokenizer: Tokenizer function to tokenize strings into a list of tokens.
         filter_func: Function used to filter out examples. At the stage of filtering,
             each example is represented by a dataclass with two attributes: text and label
 
@@ -46,10 +44,15 @@ def SSTDataset(
     Example::
 
         # To include subtrees in training set
-        >>> train, val, test = SSTDataset(train_subtrees='true')
+        >>> train, val, test = SSTDataset(train_subtrees=True)
         # To remove all neutral examples
         >>> train, val, test = SSTDataset(filter_func=lambda x: x.label != 'neutral')
     """
+
+    # if tokenizer - simply set identity function - could move this logic to map function
+    if not tokenizer:
+        tokenizer = lambda x: x
+
 
     dir_name = "trees"
 
@@ -89,6 +92,9 @@ def SSTDataset(
         "name": name,
         "train_subtrees": train_subtrees,
         "fine_grained": fine_grained,
+        # TODO: this logic might need to change - no longer makes sense if 
+        # allowing for no tokenizer - perhaps just simply check if callable
+        # and if not overriden __str__ print warning
         "tokenizer": tokenizer.__str__() if isinstance(tokenizer, BaseTokenizer) else None,
     }
 

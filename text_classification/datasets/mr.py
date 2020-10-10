@@ -15,7 +15,7 @@ from ..utils import download_extract
 def MRDataset(
     root: str = ".data",
     name: str = "mr",
-    tokenizer: Union[Callable, str] = SpacyTokenizer(),
+    tokenizer: Optional[Callable] = None,
     filter_func: Optional[Callable] = None,
 ):
 
@@ -29,9 +29,7 @@ def MRDataset(
     Args:
         root: Name of the root directory in which to store data.
         name: Name of the folder within root directory to store data.
-        tokenizer: Tokenizer function to tokenize strings into a list of tokens. Option between
-            "spacy" and "simple" to use a SpaCy and white-space tokenizer respectively.
-            Custom tokenizer can be used by passing a callable.
+        tokenizer: Tokenizer function to tokenize strings into a list of tokens. 
         filter_func: Function used to filter out examples. At the stage of filtering,
             each example is represented by a dataclass with two attributes: text and label
 
@@ -45,6 +43,10 @@ def MRDataset(
         >>> pos_examples = MRDataset(filter_func = lambda x: x.label == 'positive')
 
     """
+    # if tokenizer - simply set identity function.
+    # TODO: could move this logic to map function
+    if not tokenizer:
+        tokenizer = lambda x: x
 
     dir_name = "rt-polaritydata"
 

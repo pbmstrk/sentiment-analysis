@@ -23,7 +23,8 @@ class TestData:
         root = '.testdata'
 
         # test with default SpacyTokenizer
-        train, val, test = SSTDataset(filter_func=lambda x: x.label != 'neutral', root=root)
+        train, val, test = SSTDataset(filter_func=lambda x: x.label != 'neutral', root=root,
+        tokenizer=SpacyTokenizer())
         assert_size_sst(train, val, test)
         assert train.attributes['tokenizer'] == SpacyTokenizer().__str__()
 
@@ -40,7 +41,7 @@ class TestData:
         root = '.testdata'
 
         # test with default SpacyTokenizer
-        mr_data = MRDataset(root=root)
+        mr_data = MRDataset(root=root, tokenizer=SpacyTokenizer())
         assert_size_mr(mr_data)
         assert mr_data.attributes['tokenizer'] == SpacyTokenizer().__str__()
 

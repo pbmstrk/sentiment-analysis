@@ -2,7 +2,6 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import pytorch_lightning as pl
-
 from text_classification.models.base import BaseClassifier
 
 from typing import Optional
@@ -76,8 +75,9 @@ class RNF(BaseClassifier):
         embed_dim: Size of the pre-trained word embeddings.
         hidden_dim: Size of the output layer of the LSTM.
         embed_dropout: Dropout applied to the word embeddings
+        dropout: Dropout applied to the output of the LSTM.
         embed_mat: Pre-trained word-embedddings. Size should match (input_size, embed_dim)
-        embed_freeze: Freeze embedding weights during training. For example, to keep pre-trained
+        freeze_embed: Freeze embedding weights during training. For example, to keep pre-trained
             vectors (e.g. GloVe) fixed during training
         lr: learning rate of the optimizer.
 
@@ -97,7 +97,7 @@ class RNF(BaseClassifier):
         embed_dropout: float = 0.4,
         dropout: float = 0.4,
         embed_mat=None,
-        embed_freeze: bool = False,
+        freeze_embed: bool = False,
         lr: float = 0.001
     ):
         # add freeze to embeds
@@ -111,7 +111,7 @@ class RNF(BaseClassifier):
         self.embed_dropout = embed_dropout
         self.dropout = dropout
         self.embed_mat = embed_mat
-        self.embed_freeze = embed_freeze
+        self.freeze_embed = freeze_embed
         self.lr = lr
 
         self.embedding = nn.Embedding(self.input_size, self.embed_dim, padding_idx=0)
@@ -119,7 +119,7 @@ class RNF(BaseClassifier):
             self.embedding = self.embedding.from_pretrained(
                 torch.from_numpy(self.embed_mat).float()
             )
-        if self.embed_freeze:
+        if self.freeze_embed:
             self.embedding.weight.requires_grad = False
 
         self.time_lstm = TimeDistributedLSTM(

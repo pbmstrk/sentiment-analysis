@@ -138,7 +138,7 @@ class TestRNF:
         model_args = {
             'input_size': input_size,
             'num_class': num_class,
-            'embed_freeze': True
+            'freeze_embed': True
         }
 
         model_before = RNF(**model_args)
