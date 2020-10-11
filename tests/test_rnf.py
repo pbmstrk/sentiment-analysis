@@ -2,6 +2,7 @@ import torch
 import pytest
 from torch.utils.data import DataLoader, TensorDataset
 import pytorch_lightning as pl
+import numpy as np
 
 from text_classification.models import RNF
 
@@ -58,7 +59,7 @@ class TestRNF:
         trainer = pl.Trainer(
             progress_bar_refresh_rate=0,
             max_steps=5,
-            num_sanity_val_steps=0,
+            num_sanity_val_steps=1,
             checkpoint_callback=False,
             logger=False,
         )
@@ -76,11 +77,13 @@ class TestRNF:
             list(model_before.parameters()), list(model_after.parameters())
         )
 
-        trainer.fit(model_after, data_loader)
+        trainer.fit(model_after, data_loader, data_loader)
 
         assert not self._parameters_are_eq(
             list(model_before.parameters()), list(model_after.parameters())
         )
+
+        trainer.test(model_after, data_loader)
 
     @pytest.mark.skipif(not torch.cuda.is_available(), reason="Test requires GPU")
     def test_forward_backward_gpu(self):
@@ -95,7 +98,7 @@ class TestRNF:
             gpus=1,
             progress_bar_refresh_rate=0,
             max_steps=5,
-            num_sanity_val_steps=0,
+            num_sanity_val_steps=1,
             checkpoint_callback=False,
             logger=False,
         )
@@ -113,11 +116,13 @@ class TestRNF:
             list(model_before.parameters()), list(model_after.parameters())
         )
 
-        trainer.fit(model_after, data_loader)
+        trainer.fit(model_after, data_loader, data_loader)
 
         assert not self._parameters_are_eq(
             list(model_before.parameters()), list(model_after.parameters())
         )
+
+        trainer.test(model_after, data_loader)
 
     def test_weight_freeze(self):
 
@@ -135,10 +140,13 @@ class TestRNF:
             logger=False,
         )
 
+        embed_mat = np.random.randn(input_size, 300)
+
         model_args = {
             'input_size': input_size,
             'num_class': num_class,
-            'freeze_embed': True
+            'freeze_embed': True,
+            'embed_mat': embed_mat
         }
 
         model_before = RNF(**model_args)
