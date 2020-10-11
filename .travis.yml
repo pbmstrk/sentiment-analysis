@@ -17,7 +17,7 @@ install:
   - conda create -n test-environment python=$TRAVIS_PYTHON_VERSION
   - conda activate test-environment
   - conda install pytorch torchtext cpuonly -c pytorch
-  - conda install pytorch-lightning spacy -c conda-forge
+  - conda install pytorch-lightning=0.9.0 spacy -c conda-forge
   - python -m spacy download en
   - pip install nltk 
   - pip install pytest

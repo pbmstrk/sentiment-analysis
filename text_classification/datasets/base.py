@@ -1,14 +1,11 @@
-from dataclasses import dataclass
-from typing import List, Union
+from typing import List, Union, NamedTuple
 
 from torch.utils.data import Dataset
 
-
-@dataclass
-class Example:
-    text: List[str]
-    label: Union[int, str]
-
+# could use Dataclass here (choose not to for python 3.5 compatability)
+class Example(NamedTuple):
+    text: Union[str, List[str]]
+    label: int 
 
 DATASETS = {
     "sst": "http://nlp.stanford.edu/sentiment/trainDevTestTrees_PTB.zip",
