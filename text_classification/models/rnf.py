@@ -25,7 +25,7 @@ class TimeDistributedLSTM(pl.LightningModule):
         self.lstm = nn.LSTM(self.input_dim, self.output_dim,
                 batch_first=True)
 
-        self.lstm_dropout = nn.Dropout2d(p=self.dropout)
+        self.lstm_dropout = nn.Dropout(p=self.dropout)
 
     def forward(self, x):
 
@@ -128,7 +128,7 @@ class RNF(BaseClassifier):
 
         self.fc = nn.Linear(self.hidden_dim, self.num_classes)
 
-        self.embed_dropout = nn.Dropout2d(p=self.embed_dropout)
+        self.embed_dropout = nn.Dropout(p=self.embed_dropout)
 
     def forward(self, batch):
 
