@@ -1,0 +1,20 @@
+dataset:
+    train_subtrees: true
+    fine_grained: false
+vocab:
+    min_freq: 1
+    max_size: null
+model:
+    filter_width: 6
+    hidden_dim: 300
+    embed_dropout: 0.4
+    dropout: 0.4
+    freeze_embed: False
+    lr: 0.001
+datamodule:
+    batch_size: 64
+trainer:
+    gpus: 1
+    progress_bar_refresh_rate: 0
+    max_epochs: 15
+
