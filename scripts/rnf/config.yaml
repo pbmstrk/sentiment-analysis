@@ -9,7 +9,7 @@ model:
     hidden_dim: 300
     embed_dropout: 0.4
     dropout: 0.4
-    freeze_embed: False
+    freeze_embed: True
     lr: 0.001
 datamodule:
     batch_size: 64
@@ -17,4 +17,5 @@ trainer:
     gpus: 1
     progress_bar_refresh_rate: 0
     max_epochs: 15
+    deterministic: True
 

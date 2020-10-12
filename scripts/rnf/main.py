@@ -7,10 +7,11 @@ from text_classification.models import RNF
 from text_classification.vectors import GloVe
 from text_classification.vocab import Vocab
 
-import pytorch_lightning as pl
+import pytorch_lightning import Trainer, seed_everything
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.callbacks.base import Callback
+
 
 
 class LoggingCallback(Callback):
@@ -40,6 +41,8 @@ checkpoint_callback = ModelCheckpoint(
 
 @hydra.main(config_name="config")
 def main(cfg: DictConfig):
+
+    seed_everything(42)
 
     if not cfg.dataset.fine_grained:
         filter_func = lambda x: x.label != 'neutral'
