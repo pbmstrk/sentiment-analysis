@@ -51,6 +51,8 @@ class TimeDistributedLSTM(pl.LightningModule):
 def format_conv_input(x, filter_width, sent_len):
 
     chunks = []
+    if sent_len - filter_width + 1 <= 1:
+        return x.unsqueeze(1)
     for i in range(sent_len - filter_width + 1):
         chunk = x[:, i : i + filter_width, :]
         chunk = chunk.unsqueeze(1)
