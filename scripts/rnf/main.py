@@ -6,8 +6,9 @@ from text_classification.encoders import RNFEncoder
 from text_classification.models import RNF
 from text_classification.vectors import GloVe
 from text_classification.vocab import Vocab
+from text_classification.tokenizers import SpacyTokenizer
 
-import pytorch_lightning import Trainer, seed_everything
+from pytorch_lightning import Trainer, seed_everything
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.callbacks.base import Callback
@@ -50,7 +51,8 @@ def main(cfg: DictConfig):
         filter_func = None
     
     # 1. Get SST dataset
-    train, val, test = SSTDataset(filter_func=filter_func, **cfg.dataset)
+    train, val, test = SSTDataset(filter_func=filter_func, 
+                        tokenizer=SpacyTokenizer(), **cfg.dataset)
 
     # 2. Get vocab
     vocab = Vocab(train, **cfg.vocab)
@@ -71,7 +73,7 @@ def main(cfg: DictConfig):
     model = RNF(input_size=len(vocab), num_class=num_class, embed_mat=embed_mat, **cfg.model)
 
     # 7. Setup trainer
-    trainer = pl.Trainer(early_stop_callback=early_stop_callback,
+    trainer = Trainer(early_stop_callback=early_stop_callback,
                      checkpoint_callback=checkpoint_callback,
                      callbacks=[LoggingCallback()], **cfg.trainer)
 
