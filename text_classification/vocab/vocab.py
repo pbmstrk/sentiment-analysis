@@ -53,7 +53,8 @@ class Vocab:
             self.wordlist.append(self.unk_token)
             self.unk_token_index = self.wordlist.index(self.unk_token)
 
-        self.wordlist.extend(self.special_tokens)
+        if special_tokens:
+            self.wordlist.extend(self.special_tokens)
 
         self.encoding = {}
 
