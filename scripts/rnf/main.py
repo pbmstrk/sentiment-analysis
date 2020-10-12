@@ -49,16 +49,20 @@ def main(cfg: DictConfig):
         filter_func = lambda x: x.label != 'neutral'
     else:
         filter_func = None
+
+    # hydra generates a new working directory for each run
+    # want to store data in same directory each run
+    root=hydra.utils.to_absolute_path('.data')
     
     # 1. Get SST dataset
-    train, val, test = SSTDataset(filter_func=filter_func, 
+    train, val, test = SSTDataset(root=root, filter_func=filter_func,
                         tokenizer=SpacyTokenizer(), **cfg.dataset)
 
     # 2. Get vocab
     vocab = Vocab(train, **cfg.vocab)
 
     # 3. Retrieve pre-trained embeddings
-    vectors = GloVe(name='840B', dim=300)
+    vectors = GloVe(root=root, name='840B', dim=300)
     embed_mat = vectors.get_matrix(vocab)
     
     # 4. Setup encoder to encode examples
