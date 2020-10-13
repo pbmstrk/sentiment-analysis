@@ -77,10 +77,4 @@ def MRDataset(
         label_map=None,
     )
 
-    # define attributes of the dataset. Can be passed to TextDataset instance.
-    attributes = {
-        "name": name,
-        "tokenizer": tokenizer.__str__() if isinstance(tokenizer, BaseTokenizer) else None,
-    }
-
-    return TextDataset([x for x in map(map_f, all_examples) if x], attributes=attributes)
+    return TextDataset([x for x in map(map_f, all_examples) if x])

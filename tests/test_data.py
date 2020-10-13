@@ -26,7 +26,6 @@ class TestData:
         train, val, test = SSTDataset(filter_func=lambda x: x.label != 'neutral', root=root,
         tokenizer=SpacyTokenizer())
         assert_size_sst(train, val, test)
-        assert train.attributes['tokenizer'] == SpacyTokenizer().__str__()
 
         # test access
         train[0]
@@ -34,7 +33,6 @@ class TestData:
         # test with simple and subtrees
         train, val, test = SSTDataset(filter_func=lambda x: x.label != 'neutral', 
                                 root=root, tokenizer=SimpleTokenizer(), train_subtrees=True)
-        assert train.attributes['tokenizer'] == SimpleTokenizer().__str__()
 
     def test_mr(self):
 
@@ -43,14 +41,12 @@ class TestData:
         # test with default SpacyTokenizer
         mr_data = MRDataset(root=root, tokenizer=SpacyTokenizer())
         assert_size_mr(mr_data)
-        assert mr_data.attributes['tokenizer'] == SpacyTokenizer().__str__()
 
         # test access
         mr_data[0]
 
         mr_data = MRDataset(root=root, tokenizer=SimpleTokenizer()) 
         assert_size_mr(mr_data)
-        assert mr_data.attributes['tokenizer'] == SimpleTokenizer().__str__()
         
 
 

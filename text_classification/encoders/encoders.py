@@ -5,12 +5,8 @@ import torch
 class BaseEncoder:
     @abstractmethod
     def __call__(self):
-        return
+        raise NotImplementedError
 
-    @property
-    @abstractmethod
-    def attributes(self):
-        return {}
 
 class RNFEncoder(BaseEncoder):
 
@@ -38,7 +34,3 @@ class RNFEncoder(BaseEncoder):
         label = torch.tensor(self.target_encoding[example[1]])
 
         return text, label
-
-    @property
-    def attributes(self):
-        return {'vocab': self.vocab.attributes}

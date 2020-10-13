@@ -8,10 +8,6 @@ class BaseTokenizer:
     def __call__(self, x):
         raise NotImplementedError
 
-    @abstractmethod
-    def __str__(self):
-        raise NotImplementedError
-
 
 class SimpleTokenizer(BaseTokenizer):
     def __init__(self, split=" "):

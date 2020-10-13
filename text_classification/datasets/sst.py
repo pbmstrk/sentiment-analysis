@@ -87,19 +87,8 @@ def SSTDataset(
         label_map=label_map,
     )
 
-    # define attributes of the dataset. Can be passed to TextDataset instance.
-    attributes = {
-        "name": name,
-        "train_subtrees": train_subtrees,
-        "fine_grained": fine_grained,
-        # TODO: this logic might need to change - no longer makes sense if 
-        # allowing for no tokenizer - perhaps just simply check if callable
-        # and if not overriden __str__ print warning
-        "tokenizer": tokenizer.__str__() if isinstance(tokenizer, BaseTokenizer) else None,
-    }
-
     return (
-        TextDataset([x for x in map(map_f, train) if x], attributes=attributes),
-        TextDataset([x for x in map(map_f, val) if x], attributes=attributes),
-        TextDataset([x for x in map(map_f, test) if x], attributes=attributes),
+        TextDataset([x for x in map(map_f, train) if x]),
+        TextDataset([x for x in map(map_f, val) if x]),
+        TextDataset([x for x in map(map_f, test) if x]),
     )

@@ -65,23 +65,19 @@ class Vocab:
             max_size = self.max_size if isinstance(data, TextDataset) else None
         )
 
-    @property
-    def attributes(self):
-        return {
-            "min_freq": self.min_freq,
-            "max_size": self.max_size,
-            "pad_token": {'pad_token': self.pad_token, 'index': self.pad_token_index},
-            "unk_token": {'unk_token': self.unk_token, 'index': self.unk_token_index},
-            "special_tokens": self.special_tokens,
-            "size": len(self.encoding),
-        }
-
     def __len__(self):
         return len(self.encoding)
 
     def __getitem__(self, word):
-        # TODO: insert check here if vocab contains unk_token
-        self.encoding.get(word, self.unk_token_index)
+        if hasattr(self, "unk_token_index"):
+            return self.encoding.get(word, self.unk_token_index)
+        try:
+            return self.encoding[word]
+        except KeyError:
+            print("Vocab does not contain unk token, and thus cannot process unknown tokens")
+            raise
+        
+            
 
     @staticmethod
     def flatten(lst):
@@ -89,7 +85,10 @@ class Vocab:
 
     @classmethod
     def process_dataset(cls, data):
-        list_of_vocab = cls.flatten([example[0] for example in data])
+        if isinstance(data, TextDataset):
+            list_of_vocab = cls.flatten([example[0] for example in data])
+        elif isinstance(data, list):
+            list_of_vocab = data
         vocab_count = Counter(list_of_vocab)
         return vocab_count
 

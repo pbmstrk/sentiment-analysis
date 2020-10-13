@@ -6,7 +6,7 @@ from ..encoders.encoders import BaseEncoder
 from torch.utils.data import DataLoader
 
 
-class DataModule(pl.LightningDataModule):
+class DataModule:
     def __init__(
         self,
         train: TextDataset,
@@ -22,16 +22,6 @@ class DataModule(pl.LightningDataModule):
         self.encoder = encoder
         self.batch_size = batch_size
 
-        self.attributes = {}
-        self.attributes["datamodule"] = {"batch_size": self.batch_size}
-        self.attributes["dataset"] = train.attributes
-        if isinstance(self.encoder, BaseEncoder):
-            if isinstance(getattr(type(self.encoder), "attributes", None), property):
-                self.attributes["encoder"] = encoder.attributes
-
-    def setup(self):
-
-        pass
 
     def train_dataloader(self) -> DataLoader:
 

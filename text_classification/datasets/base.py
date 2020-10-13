@@ -14,9 +14,8 @@ DATASETS = {
 
 
 class TextDataset(Dataset):
-    def __init__(self, dataset: List[Example], attributes: dict = None):
+    def __init__(self, dataset: List[Example]):
         self.dataset = dataset
-        self.attributes = attributes
 
     def __len__(self):
         return len(self.dataset)
