@@ -21,12 +21,12 @@ class BaseClassifier(pl.LightningModule):
         y_hat = self(batch)
 
         # compute loss
-        loss = F.binary_cross_entropy_with_logits(y_hat, y)
+        loss = F.cross_entropy(y_hat, y)
 
         # compute acc
-        preds = torch.round(torch.sigmoid(y_hat))
-        correct = (preds == y).float().sum()
-        acc = correct / len(y)
+        _, pred = torch.max(y_hat.data, 1)
+        correct = (pred == y).sum()
+        acc = correct.float() / len(y)
 
         return {"loss": loss, "acc": acc, "batch_size": len(y)}
 
@@ -44,12 +44,12 @@ class BaseClassifier(pl.LightningModule):
         y_hat = self(batch)
 
         # compute loss
-        loss = F.binary_cross_entropy_with_logits(y_hat, y)
+        loss = F.cross_entropy(y_hat, y)
 
         # compute acc
-        preds = torch.round(torch.sigmoid(y_hat))
-        correct = (preds == y).float().sum()
-        acc = correct / len(y)
+        _, pred = torch.max(y_hat.data, 1)
+        correct = (pred == y).sum()
+        acc = correct.float() / len(y)
 
         return {"val_loss": loss, "val_acc": acc, "batch_size": len(y)}
 
