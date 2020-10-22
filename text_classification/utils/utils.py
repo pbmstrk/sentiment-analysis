@@ -1,10 +1,11 @@
-import os
-import zipfile
-from tqdm import tqdm
-import requests
-from typing import Optional
-import shutil
 import gzip
+import os
+import shutil
+import zipfile
+from typing import Optional
+
+import requests
+from tqdm import tqdm
 
 
 def _process_resp(resp, filepath):
