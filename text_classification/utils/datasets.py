@@ -1,8 +1,8 @@
-from typing import Callable, List, Union, Optional
+from typing import Callable, List, Optional
+
 from nltk.tree import Tree
 
 from ..datasets.base import Example
-from ..tokenizers.tokenizers import BaseTokenizer
 
 
 def parse_line_tree(line, subtrees: bool = True):
@@ -19,7 +19,7 @@ def parse_line_without_label(line, label):
     return ([" ".join(line.split()), label],)
 
 
-def get_data_from_file(filepath: str, parser: Callable, errors=None):
+def get_data_from_file(filepath: str, parser: Callable, errors: Optional[str] = None):
 
     exs = []
     with open(filepath, errors=errors if errors else None) as f:
@@ -30,13 +30,13 @@ def get_data_from_file(filepath: str, parser: Callable, errors=None):
 
 def map_list_to_example(
     element: List,
-    tokenizer: Union[Callable, BaseTokenizer],
-    filter_func: Callable,
+    tokenizer: Optional[Callable],
+    filter_func: Optional[Callable],
     label_map: Optional[dict] = None,
 ):
 
     ex = Example(
-        text=tokenizer(element[0]),
+        text=tokenizer(element[0]) if tokenizer else element[0],
         label=label_map[element[1]] if label_map else element[1],
     )
 

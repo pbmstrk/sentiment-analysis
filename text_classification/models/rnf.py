@@ -1,29 +1,20 @@
+import pytorch_lightning as pl
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import pytorch_lightning as pl
-from text_classification.models.base import BaseClassifier
 
-from typing import Optional
+from text_classification.models.base import BaseClassifier
 
 
 class TimeDistributedLSTM(pl.LightningModule):
-
-    def __init__(
-        self, 
-        input_dim: int, 
-        output_dim: int, 
-        time_axis: int,
-        dropout: float
-    ):
+    def __init__(self, input_dim: int, output_dim: int, time_axis: int, dropout: float):
         super().__init__()
 
         self.input_dim = input_dim
         self.output_dim = output_dim
         self.time_axis = time_axis
         self.dropout = dropout
-        self.lstm = nn.LSTM(self.input_dim, self.output_dim,
-                batch_first=True)
+        self.lstm = nn.LSTM(self.input_dim, self.output_dim, batch_first=True)
 
         self.lstm_dropout = nn.Dropout(p=self.dropout)
 
@@ -100,7 +91,7 @@ class RNF(BaseClassifier):
         dropout: float = 0.4,
         embed_mat=None,
         freeze_embed: bool = False,
-        lr: float = 0.001
+        lr: float = 0.001,
     ):
         # add freeze to embeds
         super().__init__()
@@ -130,14 +121,14 @@ class RNF(BaseClassifier):
 
         self.fc = nn.Linear(self.hidden_dim, self.num_classes)
 
-        self.embed_dropout = nn.Dropout(p=self.embed_dropout)
+        self.embed_drop = nn.Dropout(p=self.embed_dropout)
 
     def forward(self, batch):
 
         inputs, _ = batch
         # inputs: [BATCH_SIZE, LONGEST_SEQ]
 
-        embedded = self.embed_dropout(self.embedding(inputs))
+        embedded = self.embed_drop(self.embedding(inputs))
         # embedded: [BATCH_SIZE, LONGEST_SEQ, EMBED_DIM]
 
         lstm_inputs = format_conv_input(
