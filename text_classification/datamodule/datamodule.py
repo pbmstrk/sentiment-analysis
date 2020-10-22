@@ -1,7 +1,5 @@
-import pytorch_lightning as pl
 from typing import Optional, Callable
 from ..datasets import TextDataset
-from ..encoders.encoders import BaseEncoder
 
 from torch.utils.data import DataLoader
 
@@ -13,7 +11,7 @@ class DataModule:
         encoder: Callable,
         val: Optional[TextDataset] = None,
         test: Optional[TextDataset] = None,
-        batch_size: Optional[int] = 16,
+        batch_size: int = 16,
     ):
 
         self.train = train

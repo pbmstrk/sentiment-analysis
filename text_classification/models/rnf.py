@@ -4,9 +4,6 @@ import torch.nn.functional as F
 import pytorch_lightning as pl
 from text_classification.models.base import BaseClassifier
 
-from typing import Optional
-
-
 class TimeDistributedLSTM(pl.LightningModule):
 
     def __init__(

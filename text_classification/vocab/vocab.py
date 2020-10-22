@@ -45,16 +45,21 @@ class Vocab:
         self.special_tokens = special_tokens
 
         self.wordlist = []
+        self.num_all_special_tokens = 0
 
         if self.pad_token:
             self.wordlist.append(self.pad_token)
             self.pad_token_index = self.wordlist.index(self.pad_token)
+            self.num_all_special_tokens += 1
         if self.unk_token:
             self.wordlist.append(self.unk_token)
             self.unk_token_index = self.wordlist.index(self.unk_token)
+            self.num_all_special_tokens += 1
 
         if special_tokens:
             self.wordlist.extend(self.special_tokens)
+            self.num_all_special_tokens += len(self.special_tokens)
+
 
         self.encoding = {}
 
@@ -77,8 +82,6 @@ class Vocab:
             print("Vocab does not contain unk token, and thus cannot process unknown tokens")
             raise
         
-            
-
     @staticmethod
     def flatten(lst):
         return [item for sublist in lst for item in sublist]
@@ -86,11 +89,17 @@ class Vocab:
     @classmethod
     def process_dataset(cls, data):
         if isinstance(data, TextDataset):
+            cls.check_input(data[0][0])
             list_of_vocab = cls.flatten([example[0] for example in data])
         elif isinstance(data, list):
             list_of_vocab = data
         vocab_count = Counter(list_of_vocab)
         return vocab_count
+
+    @staticmethod
+    def check_input(example):
+        if isinstance(example, str):
+            raise ValueError("Input is string, rather than list of strings")
 
     def __iter__(self):
         return iter(self.encoding)

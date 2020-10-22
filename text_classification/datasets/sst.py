@@ -1,6 +1,6 @@
 import os
 from functools import partial
-from typing import Callable, Optional, Union
+from typing import Callable, Optional
 
 from .base import DATASETS, TextDataset
 from ..utils.datasets import (
@@ -8,7 +8,7 @@ from ..utils.datasets import (
     map_list_to_example,
     parse_line_tree,
 )
-from ..tokenizers import SimpleTokenizer, SpacyTokenizer, BaseTokenizer
+
 from ..utils import download_extract
 
 
@@ -19,6 +19,7 @@ def SSTDataset(
     fine_grained: bool = False,
     tokenizer: Optional[Callable] = None,
     filter_func: Optional[Callable] = None,
+    override: bool = False
 ):
 
     r"""
@@ -37,6 +38,7 @@ def SSTDataset(
         tokenizer: Tokenizer function to tokenize strings into a list of tokens.
         filter_func: Function used to filter out examples. At the stage of filtering,
             each example is represented by a dataclass with two attributes: text and label
+        override: Boolean indicating whether previously downloaded dataset should be overriden.
 
     Returns:
         Processed train, val and test datasets
@@ -48,11 +50,6 @@ def SSTDataset(
         # To remove all neutral examples
         >>> train, val, test = SSTDataset(filter_func=lambda x: x.label != 'neutral')
     """
-
-    # if tokenizer - simply set identity function - could move this logic to map function
-    if not tokenizer:
-        tokenizer = lambda x: x
-
 
     dir_name = "trees"
 
@@ -68,7 +65,7 @@ def SSTDataset(
 
     # download and extract dataset
     url = DATASETS["sst"]
-    download_extract(url, name, root=root)
+    download_extract(url, name, root=root, override=override)
 
     # define a parser to format each example - use partial to supply additional
     # arguments

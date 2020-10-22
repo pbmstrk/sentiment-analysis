@@ -1,6 +1,6 @@
 import os
 from functools import partial
-from typing import Callable, Optional, Union
+from typing import Callable, Optional
 
 from .base import DATASETS, TextDataset
 from ..utils.datasets import (
@@ -8,7 +8,7 @@ from ..utils.datasets import (
     map_list_to_example,
     parse_line_without_label,
 )
-from ..tokenizers import SimpleTokenizer, SpacyTokenizer, BaseTokenizer
+
 from ..utils import download_extract
 
 
@@ -43,10 +43,6 @@ def MRDataset(
         >>> pos_examples = MRDataset(filter_func = lambda x: x.label == 'positive')
 
     """
-    # if tokenizer - simply set identity function.
-    # TODO: could move this logic to map function
-    if not tokenizer:
-        tokenizer = lambda x: x
 
     dir_name = "rt-polaritydata"
 

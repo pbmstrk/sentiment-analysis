@@ -5,7 +5,7 @@ from torch.utils.data import Dataset
 # could use Dataclass here (choose not to for python 3.5 compatability)
 class Example(NamedTuple):
     text: Union[str, List[str]]
-    label: int 
+    label: Union[int, str]
 
 DATASETS = {
     "sst": "http://nlp.stanford.edu/sentiment/trainDevTestTrees_PTB.zip",

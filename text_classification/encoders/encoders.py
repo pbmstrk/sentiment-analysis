@@ -29,7 +29,7 @@ class RNFEncoder(BaseEncoder):
     def _encode(self, example):
 
         text = torch.tensor(
-            [self.vocab.encoding.get(word, 1) for word in example[0]]
+            [self.vocab.encoding[word] for word in example[0]]
         )
         label = torch.tensor(self.target_encoding[example[1]])
 
