@@ -1,6 +1,8 @@
 from abc import abstractmethod
-from torch.nn.utils.rnn import pad_sequence
+
 import torch
+from torch.nn.utils.rnn import pad_sequence
+
 
 class BaseEncoder:
     @abstractmethod
@@ -9,7 +11,6 @@ class BaseEncoder:
 
 
 class RNFEncoder(BaseEncoder):
-
     def __init__(self, vocab, target_encoding):
         self.vocab = vocab
         self.target_encoding = target_encoding
@@ -17,7 +18,7 @@ class RNFEncoder(BaseEncoder):
     def __call__(self, batch):
 
         batch = [self._encode(item) for item in batch]
-     
+
         data = [item[0] for item in batch]
         targets = [item[1] for item in batch]
 
@@ -28,9 +29,7 @@ class RNFEncoder(BaseEncoder):
 
     def _encode(self, example):
 
-        text = torch.tensor(
-            [self.vocab.encoding[word] for word in example[0]]
-        )
+        text = torch.tensor([self.vocab.encoding[word] for word in example[0]])
         label = torch.tensor(self.target_encoding[example[1]])
 
         return text, label

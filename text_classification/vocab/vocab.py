@@ -26,7 +26,6 @@ class Vocab:
         >>> vocab = Vocab(data=MRDataset(), min_freq=3)
     """
 
-
     def __init__(
         self,
         data: Union[List, TextDataset],
@@ -56,18 +55,17 @@ class Vocab:
             self.unk_token_index = self.wordlist.index(self.unk_token)
             self.num_all_special_tokens += 1
 
-        if special_tokens:
+        if self.special_tokens:
             self.wordlist.extend(self.special_tokens)
             self.num_all_special_tokens += len(self.special_tokens)
-
 
         self.encoding = {}
 
         # actually build encoding here
         self.build_vocab(
             self.vocab_count,
-            min_freq = self.min_freq if isinstance(data, TextDataset) else 1,
-            max_size = self.max_size if isinstance(data, TextDataset) else None
+            min_freq=self.min_freq if isinstance(data, TextDataset) else 1,
+            max_size=self.max_size if isinstance(data, TextDataset) else None,
         )
 
     def __len__(self):
@@ -79,9 +77,11 @@ class Vocab:
         try:
             return self.encoding[word]
         except KeyError:
-            print("Vocab does not contain unk token, and thus cannot process unknown tokens")
+            print(
+                "Vocab does not contain unk token, and thus cannot process unknown tokens"
+            )
             raise
-        
+
     @staticmethod
     def flatten(lst):
         return [item for sublist in lst for item in sublist]

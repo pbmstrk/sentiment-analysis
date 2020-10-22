@@ -2,14 +2,10 @@ import os
 from functools import partial
 from typing import Callable, Optional
 
-from .base import DATASETS, TextDataset
-from ..utils.datasets import (
-    get_data_from_file,
-    map_list_to_example,
-    parse_line_tree,
-)
-
 from ..utils import download_extract
+from ..utils.datasets import (get_data_from_file, map_list_to_example,
+                              parse_line_tree)
+from .base import DATASETS, TextDataset
 
 
 def SSTDataset(
@@ -19,7 +15,7 @@ def SSTDataset(
     fine_grained: bool = False,
     tokenizer: Optional[Callable] = None,
     filter_func: Optional[Callable] = None,
-    override: bool = False
+    override: bool = False,
 ):
 
     r"""

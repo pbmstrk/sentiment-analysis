@@ -1,4 +1,5 @@
 from typing import Callable, List, Optional
+
 from nltk.tree import Tree
 
 from ..datasets.base import Example
