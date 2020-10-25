@@ -6,12 +6,16 @@ import numpy as np
 
 from text_classification.models import RNF
 
+from .base import ModelTest
+
 
 class FakeRNFDataset(Dataset):
 
-    def __init__(self):
-        self.inputs = torch.randint(0, 10, (100, 15))
-        self.targets = torch.randint(0, 10, (100, ))
+    def __init__(self, num_input, num_output):
+        self.num_input = num_input
+        self.num_output = num_output
+        self.inputs = torch.randint(0, self.num_input, (100, 15))
+        self.targets = torch.randint(0, self.num_output, (100, ))
 
     def __len__(self):
         return len(self.targets)
@@ -20,46 +24,31 @@ class FakeRNFDataset(Dataset):
         return self.inputs[idx], self.targets[idx]
 
 
-class TestRNF:
+class TestRNF(ModelTest):
 
     def test_output_shape(self):
-
-        data = FakeRNFDataset()
+        
+        # define data
+        data = FakeRNFDataset(10, 5)
         dataloader = DataLoader(data, batch_size=32)
 
-        batch = next(iter(dataloader))
-
+        # define model
         model_options = {
-            'input_size': 100,
-            'num_class': 10
+            'input_size': data.num_input,
+            'num_class': data.num_output
         }
-
         model = RNF(**model_options)
 
-        assert model(batch).shape == torch.Size([32, 10])
-
-
-    def run_model_test(self, trainer_options, model):
-
-        data = FakeRNFDataset()
-        dataloader = DataLoader(data, batch_size=32)
-
-        trainer = pl.Trainer(**trainer_options)
-
-        # check if model actually trains
-        # pytorch-lightning/blob/master/tests/base/develop_pipelines.py#L62-L69
-        initial_values = torch.tensor([torch.sum(torch.abs(x)) for x in model.parameters()])
-        result = trainer.fit(model, train_dataloader=dataloader, val_dataloaders=dataloader)
-        post_train_values = torch.tensor([torch.sum(torch.abs(x)) for x in model.parameters()])
-
-        assert result == 1
-
-        assert torch.norm(initial_values - post_train_values) > 0.1
-
-        test_result = trainer.test(model, dataloader)
+        # run test
+        self.check_output_shape(model, dataloader, torch.Size([32, 5]))
 
     def test_forward_backward(self):
         
+        # define data
+        data = FakeRNFDataset(10, 5)
+        dataloader = DataLoader(data, batch_size=32)
+
+        # define trainer options
         trainer_options = {
             "progress_bar_refresh_rate": 0,
             "max_steps": 5,
@@ -68,19 +57,25 @@ class TestRNF:
             "logger": False,
         }
 
+        # define model
         model_options = {
-            'input_size': 100,
-            'num_class': 10
+            'input_size': data.num_input,
+            'num_class': data.num_output
         }
-
         model = RNF(**model_options)
 
-        self.run_model_test(trainer_options, model)
+        # run test
+        self.run_model_test(trainer_options, model, dataloader)
 
         
     @pytest.mark.skipif(not torch.cuda.is_available(), reason="Test requires GPU")
     def test_forward_backward_gpu(self):
 
+        # define data
+        data = FakeRNFDataset(10, 5)
+        dataloader = DataLoader(data, batch_size=32)
+
+        # define trainer options
         trainer_options = {
             "gpus": 1,
             "progress_bar_refresh_rate": 0,
@@ -90,18 +85,19 @@ class TestRNF:
             "logger": False,
         }
 
+        # define model
         model_options = {
-            'input_size': 100,
-            'num_class': 10
+            'input_size': data.num_input,
+            'num_class': data.num_output
         }
-
         model = RNF(**model_options)
 
-        self.run_model_test(trainer_options, model)
+        # run test
+        self.run_model_test(trainer_options, model, dataloader)
 
     def test_weight_freeze(self):
 
-        data = FakeRNFDataset()
+        data = FakeRNFDataset(10, 5)
         dataloader = DataLoader(data, batch_size=32)
         
         trainer_options = {
@@ -117,8 +113,8 @@ class TestRNF:
         embed_mat = np.random.randn(100, 300)
 
         model_options = {
-            'input_size': 100,
-            'num_class': 10,
+            'input_size': data.num_input,
+            'num_class': data.num_output,
             'freeze_embed': True,
             'embed_mat': embed_mat
         }
@@ -131,3 +127,4 @@ class TestRNF:
         assert torch.all(torch.eq(model_before.embedding.weight, model_after.embedding.weight))
         trainer.fit(model_after, dataloader)
         assert torch.all(torch.eq(model_before.embedding.weight, model_after.embedding.weight))
+
