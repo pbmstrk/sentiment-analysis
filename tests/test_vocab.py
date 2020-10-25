@@ -1,17 +1,16 @@
-from text_classification.datasets.base import Example
-from text_classification.datasets import TextDataset
-from text_classification.vocab import Vocab
-
 import pytest
+
+from text_classification.datasets import TextDataset
+from text_classification.datasets.base import Example
+from text_classification.vocab import Vocab
 
 
 class TestVocab:
-
     def test_from_dataset(self):
 
         exs = [
             Example(text=["Test", "the", "vocab", "class"], label=None),
-            Example(text=["another", "example"], label=None)
+            Example(text=["another", "example"], label=None),
         ]
 
         dataset = TextDataset(exs)
@@ -27,15 +26,12 @@ class TestVocab:
         vocab = Vocab(lst)
 
         assert len(vocab) == 6 + vocab.num_all_special_tokens
-        
+
     def test_error(self):
 
-        exs = [
-            Example(text="Test the vocab class", label=None)
-        ]
+        exs = [Example(text="Test the vocab class", label=None)]
 
         dataset = TextDataset(exs)
 
         with pytest.raises(ValueError):
             Vocab(dataset)
-
