@@ -6,7 +6,6 @@ from ..datasets import TextDataset
 
 
 class DataModule:
-
     def __init__(
         self,
         train: TextDataset,

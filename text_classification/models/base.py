@@ -15,7 +15,7 @@ class BaseClassifier(pl.LightningModule):
         raise NotImplementedError
 
     def step(self, batch, batch_idx):
-        
+
         # get predictions
         y = batch[1]
         y_hat = self(batch)
@@ -42,7 +42,7 @@ class BaseClassifier(pl.LightningModule):
     def training_step(self, batch, batch_idx):
 
         return self.step(batch, batch_idx)
-   
+
     def training_epoch_end(self, outputs):
 
         self.epoch_end(outputs, prefix="train")
@@ -62,4 +62,3 @@ class BaseClassifier(pl.LightningModule):
     def test_epoch_end(self, outputs):
 
         self.epoch_end(outputs, prefix="test")
-    

@@ -68,10 +68,10 @@ class Vocab:
             max_size=self.max_size if isinstance(data, TextDataset) else None,
         )
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.encoding)
 
-    def __getitem__(self, word):
+    def __getitem__(self, word) -> int:
         if hasattr(self, "unk_token_index"):
             return self.encoding.get(word, self.unk_token_index)
         try:
@@ -83,11 +83,11 @@ class Vocab:
             raise
 
     @staticmethod
-    def flatten(lst):
+    def flatten(lst) -> List:
         return [item for sublist in lst for item in sublist]
 
     @classmethod
-    def process_dataset(cls, data):
+    def process_dataset(cls, data: Union[TextDataset, List]) -> Counter:
         if isinstance(data, TextDataset):
             cls.check_input(data[0][0])
             list_of_vocab = cls.flatten([example[0] for example in data])
@@ -104,7 +104,9 @@ class Vocab:
     def __iter__(self):
         return iter(self.encoding)
 
-    def build_vocab(self, vocab_count, min_freq, max_size):
+    def build_vocab(
+        self, vocab_count: Counter, min_freq: int, max_size: Optional[int] = None
+    ):
         # sort vocab s.t. words that occur most frequently added first
         sorted_vocab_count = {
             k: v

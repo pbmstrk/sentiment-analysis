@@ -3,8 +3,7 @@ from functools import partial
 from typing import Callable, Optional
 
 from ..utils import download_extract
-from ..utils.datasets import (get_data_from_file, map_list_to_example,
-                              parse_line_tree)
+from ..utils.datasets import get_data_from_file, map_list_to_example, parse_line_tree
 from .base import DATASETS, TextDataset
 
 
