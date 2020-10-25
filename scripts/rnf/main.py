@@ -1,5 +1,5 @@
 import hydra
-from omegaconf import DictConfig
+from omegaconf import DictConfig, OmegaConf
 from text_classification.datamodule import DataModule
 from text_classification.datasets import SSTDataset
 from text_classification.encoders import RNFEncoder
@@ -13,19 +13,21 @@ from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.callbacks.base import Callback
 
+import logging
 
+log = logging.getLogger(__name__)
 
 class LoggingCallback(Callback):
 
     def on_epoch_end(self, trainer, pl_module):
         metrics = trainer.callback_metrics
         epoch = trainer.current_epoch
-        print(f"Epoch: {epoch}")
-        print(f"Training Acc: {metrics['epoch_train_acc']:.4f}\t Training Loss: {metrics['epoch_train_loss']:.4f}")
-        print(f"Validation Acc: {metrics['epoch_val_acc']:.4f}\t Validation Loss: {metrics['epoch_val_loss']:.4f}\n")
+        log.info("Epoch: %s", epoch)
+        log.info("Training Acc: %.4f\t Training Loss: %.4f", metrics['train_epoch_acc'], metrics['train_epoch_loss'])
+        log.info("Validation Acc: %.4f\t Validation Loss: %.4f", metrics['val_epoch_acc'], metrics['val_epoch_loss'])
 
 early_stop_callback = EarlyStopping(
-   monitor='epoch_val_loss',
+   monitor='val_epoch_loss',
    min_delta=0.0001,
    patience=3,
    verbose=False,
@@ -36,12 +38,14 @@ checkpoint_callback = ModelCheckpoint(
     filepath='./checkpoints/'+'{epoch}',
     save_top_k=1,
     verbose=False,
-    monitor='epoch_val_loss',
+    monitor='val_epoch_loss',
     mode='min'
 )
 
 @hydra.main(config_name="config")
 def main(cfg: DictConfig):
+    
+    log.info("Arguments:\n %s", OmegaConf.to_yaml(cfg))
 
     seed_everything(42)
 
@@ -54,15 +58,18 @@ def main(cfg: DictConfig):
     # want to store data in same directory each run
     root=hydra.utils.to_absolute_path('.data')
     
+    log.info("Downloading data...")
     # 1. Get SST dataset
     train, val, test = SSTDataset(root=root, filter_func=filter_func,
                         tokenizer=SpacyTokenizer(), **cfg.dataset)
 
+    log.info("Creating vocab...")
     # 2. Get vocab
     vocab = Vocab(train, **cfg.vocab)
 
+    log.info("Downloading pre-trained word vectors...")
     # 3. Retrieve pre-trained embeddings
-    vectors = GloVe(root=root, name='840B', dim=300)
+    vectors = GloVe(root=root, name=cfg.vectors.name, dim=300)
     embed_mat = vectors.get_matrix(vocab)
     
     # 4. Setup encoder to encode examples
@@ -77,15 +84,18 @@ def main(cfg: DictConfig):
     model = RNF(input_size=len(vocab), num_class=num_class, embed_mat=embed_mat, **cfg.model)
 
     # 7. Setup trainer
-    trainer = Trainer(early_stop_callback=early_stop_callback,
-                     checkpoint_callback=checkpoint_callback,
-                     callbacks=[LoggingCallback()], **cfg.trainer)
-
+    trainer = Trainer(checkpoint_callback=checkpoint_callback,
+                     callbacks=[LoggingCallback(), early_stop_callback], 
+                     **cfg.trainer)
+    log.info("Training...")
     # 8. Fit model
     trainer.fit(model, ds.train_dataloader(), ds.val_dataloader())
 
     # 9. Test model
-    trainer.test(model, ds.test_dataloader(), ckpt_path=checkpoint_callback.best_model_path)
+    results = trainer.test(model, ds.test_dataloader(), 
+            ckpt_path=checkpoint_callback.best_model_path)
+
+    log.info(results)
 
 
 if __name__ == "__main__":
