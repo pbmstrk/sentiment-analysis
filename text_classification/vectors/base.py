@@ -39,7 +39,7 @@ def GloVe(name: str, dim: int, root: str = ".data"):
 
     vector_map = extract_vectors(filepath)
 
-    return Vectors(f"GloVe(name={name}, dim={dim})", dim, vector_map)
+    return Vectors(dim, vector_map)
 
 
 # def Word2Vec(name: "str" = "GoogleNews", root: str = '.data'):
@@ -53,23 +53,16 @@ def GloVe(name: str, dim: int, root: str = ".data"):
 
 
 class Vectors:
-    def __init__(self, name: str, dim: int, vector_map: dict):
+    def __init__(self, dim: int, vector_map: dict):
         self.vector_map = vector_map
         self.dim = dim
-        self.name = name
-
-    def __str__(self) -> str:
-        return self.name
 
     def get_matrix(self, vocab):
-        if isinstance(vocab, Vocab):
-            vocab_map = vocab.encoding
-        else:
-            vocab_map = vocab
+        
 
-        matrix_len = len(vocab_map)
+        matrix_len = len(vocab)
         weights_matrix = np.zeros((matrix_len, self.dim))
-        for i, word in enumerate(vocab_map):
+        for i, word in enumerate(vocab):
             try:
                 weights_matrix[i] = self.vector_map[word]
             except KeyError:
