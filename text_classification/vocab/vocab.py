@@ -1,4 +1,4 @@
-from collections import Counter
+from collections import Counter, OrderedDict
 from typing import List, Optional, Union
 
 from ..datasets.base import TextDataset
@@ -59,7 +59,7 @@ class Vocab:
             self.wordlist.extend(self.special_tokens)
             self.num_all_special_tokens += len(self.special_tokens)
 
-        self.encoding = {}
+        self.encoding = OrderedDict()
 
         # actually build encoding here
         self.build_vocab(
