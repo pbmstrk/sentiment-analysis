@@ -14,8 +14,9 @@ class BaseClassifier(pl.LightningModule):
     def forward(self, batch):
         raise NotImplementedError
 
-    def training_step(self, batch, batch_idx):
-
+    def step(self, batch, batch_idx):
+        
+        # get predictions
         y = batch[1]
         y_hat = self(batch)
 
@@ -29,45 +30,36 @@ class BaseClassifier(pl.LightningModule):
 
         return {"loss": loss, "acc": acc, "batch_size": len(y)}
 
-    def training_epoch_end(self, outputs):
+    def epoch_end(self, outputs, prefix="train"):
 
         total = sum([x["batch_size"] for x in outputs])
-        avg_loss = sum([x["loss"] * x["batch_size"] for x in outputs]) / total
-        avg_acc = sum([x["acc"] * x["batch_size"] for x in outputs]) / total
+        loss = sum([x["loss"] * x["batch_size"] for x in outputs]) / total
+        acc = sum([x["acc"] * x["batch_size"] for x in outputs]) / total
 
-        return {"epoch_train_loss": avg_loss, "epoch_train_acc": avg_acc}
+        self.log(prefix + "_epoch_loss", loss)
+        self.log(prefix + "_epoch_acc", acc)
+
+    def training_step(self, batch, batch_idx):
+
+        return self.step(batch, batch_idx)
+   
+    def training_epoch_end(self, outputs):
+
+        self.epoch_end(outputs, prefix="train")
 
     def validation_step(self, batch, batch_idx):
 
-        y = batch[1]
-        y_hat = self(batch)
-
-        # compute loss
-        loss = F.cross_entropy(y_hat, y)
-
-        # compute acc
-        _, pred = torch.max(y_hat.data, 1)
-        correct = (pred == y).sum()
-        acc = correct.float() / len(y)
-
-        return {"val_loss": loss, "val_acc": acc, "batch_size": len(y)}
+        return self.step(batch, batch_idx)
 
     def validation_epoch_end(self, outputs):
 
-        total = sum([x["batch_size"] for x in outputs])
-        avg_loss = sum([x["val_loss"] * x["batch_size"] for x in outputs]) / total
-        avg_acc = sum([x["val_acc"] * x["batch_size"] for x in outputs]) / total
-
-        return {"epoch_val_loss": avg_loss, "epoch_val_acc": avg_acc}
+        self.epoch_end(outputs, prefix="val")
 
     def test_step(self, batch, batch_idx):
 
-        return self.validation_step(batch, batch_idx)
+        return self.step(batch, batch_idx)
 
     def test_epoch_end(self, outputs):
 
-        outputs = self.validation_epoch_end(outputs)
-        return {
-            "test_loss": outputs["epoch_val_loss"],
-            "test_acc": outputs["epoch_val_acc"],
-        }
+        self.epoch_end(outputs, prefix="test")
+    
