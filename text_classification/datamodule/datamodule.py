@@ -6,10 +6,11 @@ from ..datasets import TextDataset
 
 
 class DataModule:
+
     def __init__(
         self,
         train: TextDataset,
-        encoder: Callable,
+        encoder: Optional[Callable] = None,
         val: Optional[TextDataset] = None,
         test: Optional[TextDataset] = None,
         batch_size: int = 16,
