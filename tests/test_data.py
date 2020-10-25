@@ -1,7 +1,6 @@
 from text_classification.datasets import SSTDataset, MRDataset
 from text_classification.tokenizers import SpacyTokenizer, SimpleTokenizer
 
-
 def assert_size_sst(train, val, test):
     true_train_size = 6920
     true_val_size = 872
@@ -18,12 +17,10 @@ def assert_size_mr(data):
 
 class TestData:
 
-    def test_sst(self):
-
-        root = '.testdata'
+    def test_sst(self, tmpdir):
 
         # test with default SpacyTokenizer
-        train, val, test = SSTDataset(filter_func=lambda x: x.label != 'neutral', root=root,
+        train, val, test = SSTDataset(filter_func=lambda x: x.label != 'neutral', root=tmpdir,
         tokenizer=SpacyTokenizer())
         assert_size_sst(train, val, test)
 
@@ -32,20 +29,18 @@ class TestData:
 
         # test with simple and subtrees
         train, val, test = SSTDataset(filter_func=lambda x: x.label != 'neutral', 
-                                root=root, tokenizer=SimpleTokenizer(), train_subtrees=True)
+                                root=tmpdir, tokenizer=SimpleTokenizer(), train_subtrees=True)
 
-    def test_mr(self):
-
-        root = '.testdata'
+    def test_mr(self, tmpdir):
 
         # test with default SpacyTokenizer
-        mr_data = MRDataset(root=root, tokenizer=SpacyTokenizer())
+        mr_data = MRDataset(root=tmpdir, tokenizer=SpacyTokenizer())
         assert_size_mr(mr_data)
 
         # test access
         mr_data[0]
 
-        mr_data = MRDataset(root=root, tokenizer=SimpleTokenizer()) 
+        mr_data = MRDataset(root=tmpdir, tokenizer=SimpleTokenizer()) 
         assert_size_mr(mr_data)
         
 
