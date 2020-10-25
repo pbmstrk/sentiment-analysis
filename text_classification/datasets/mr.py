@@ -3,8 +3,11 @@ from functools import partial
 from typing import Callable, Optional
 
 from ..utils import download_extract
-from ..utils.datasets import (get_data_from_file, map_list_to_example,
-                              parse_line_without_label)
+from ..utils.datasets import (
+    get_data_from_file,
+    map_list_to_example,
+    parse_line_without_label,
+)
 from .base import DATASETS, TextDataset
 
 
@@ -13,7 +16,7 @@ def MRDataset(
     name: str = "mr",
     tokenizer: Optional[Callable] = None,
     filter_func: Optional[Callable] = None,
-):
+) -> TextDataset:
 
     r"""
     Load the Movie Reviews (MR) Dataset

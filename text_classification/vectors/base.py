@@ -1,5 +1,5 @@
 import os
-from typing import Union
+from typing import Dict, List, Union
 
 import numpy as np
 from tqdm import tqdm
@@ -8,7 +8,7 @@ from ..utils import download_extract
 from ..vocab import Vocab
 
 
-def extract_vectors(filepath: str) -> dict:
+def extract_vectors(filepath: str) -> Dict:
 
     embedding_map = {}
     with open(filepath) as embed_file:
@@ -53,12 +53,11 @@ def GloVe(name: str, dim: int, root: str = ".data"):
 
 
 class Vectors:
-    def __init__(self, dim: int, vector_map: dict):
+    def __init__(self, dim: int, vector_map: Dict):
         self.vector_map = vector_map
         self.dim = dim
 
-    def get_matrix(self, vocab):
-        
+    def get_matrix(self, vocab: Union[List, Vocab]) -> np.ndarray:
 
         matrix_len = len(vocab)
         weights_matrix = np.zeros((matrix_len, self.dim))

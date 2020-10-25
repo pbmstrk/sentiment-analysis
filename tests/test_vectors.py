@@ -1,14 +1,15 @@
-from text_classification.vectors.base import Vectors
-from text_classification.vocab import Vocab
 import numpy as np
 
-class TestVectors:
+from text_classification.vectors.base import Vectors
+from text_classification.vocab import Vocab
 
+
+class TestVectors:
     def test_initialise(self):
 
         vector_map = {
-            "test": np.array([1., 1., 1.]),
-            "vectors": np.array([2., 2., 2.])
+            "test": np.array([1.0, 1.0, 1.0]),
+            "vectors": np.array([2.0, 2.0, 2.0]),
         }
 
         # initialise
