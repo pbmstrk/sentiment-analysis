@@ -22,8 +22,50 @@ def extract_vectors(filepath: str) -> Dict:
                 continue
     return embedding_map
 
+class Vectors:
 
-def GloVe(name: str, dim: int, root: str = ".data"):
+    def __init__(self, dim: int, vector_map: Dict):
+        self.vector_map = vector_map
+        self.dim = dim
+
+    def get_matrix(self, vocab: Union[List, Vocab]) -> np.ndarray:
+
+        r"""
+        Returns an embedding matrix (lookup table) of word vectors given a vocabularly.
+
+        Args:
+            vocab: Vocabularly to build matrix for. Can either be an instance of Vocab() or 
+                a list. Words that have no embedding are initialised randomly.
+        """
+
+        matrix_len = len(vocab)
+        weights_matrix = np.zeros((matrix_len, self.dim))
+        for i, word in enumerate(vocab):
+            try:
+                weights_matrix[i] = self.vector_map[word]
+            except KeyError:
+                weights_matrix[i] = np.random.normal(scale=0.25, size=(self.dim,))
+        return weights_matrix
+
+
+def GloVe(name: str, dim: int, root: str = ".data") -> Vectors:
+
+    r"""
+    Retrieves pre-trained GloVe word embeddings. Returns an instance of the vector
+    class
+
+    Args:
+        name: Name of vectors to retrieve - one of 6B, 42B, 840B and twitter.27B
+        dim: Dimension of word vectors.
+        root: Name of the root directory in which to cache vectors.
+
+    Returns:
+        Instance of vectors class.
+
+    Example::
+
+        >>> glove_vectors = GloVe(name="6B", dim=300)
+    """
 
     URLs = {
         "42B": "https://nlp.stanford.edu/data/glove.42B.300d.zip",
@@ -52,18 +94,4 @@ def GloVe(name: str, dim: int, root: str = ".data"):
 # on pause at the moment
 
 
-class Vectors:
-    def __init__(self, dim: int, vector_map: Dict):
-        self.vector_map = vector_map
-        self.dim = dim
 
-    def get_matrix(self, vocab: Union[List, Vocab]) -> np.ndarray:
-
-        matrix_len = len(vocab)
-        weights_matrix = np.zeros((matrix_len, self.dim))
-        for i, word in enumerate(vocab):
-            try:
-                weights_matrix[i] = self.vector_map[word]
-            except KeyError:
-                weights_matrix[i] = np.random.normal(scale=0.25, size=(self.dim,))
-        return weights_matrix

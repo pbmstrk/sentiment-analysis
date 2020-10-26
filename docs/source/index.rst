@@ -13,6 +13,7 @@ Welcome to Text Classification's documentation!
    datasets
    models
    vocab
+   vectors
 
 .. automodule:: text_classification
 

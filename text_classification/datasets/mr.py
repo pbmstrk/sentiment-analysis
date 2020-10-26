@@ -16,6 +16,7 @@ def MRDataset(
     name: str = "mr",
     tokenizer: Optional[Callable] = None,
     filter_func: Optional[Callable] = None,
+    override: Optional[bool] = False
 ) -> TextDataset:
 
     r"""
@@ -47,7 +48,7 @@ def MRDataset(
 
     # download and extract dataset
     url = DATASETS["mr"]
-    download_extract(url, name, root=root)
+    download_extract(url, name, root=root, override=override)
 
     # define a parser to format each example - use partial to supply additional
     # arguments

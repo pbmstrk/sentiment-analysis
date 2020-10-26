@@ -17,6 +17,8 @@ class Vocab:
             If list is passed, the arguments min_freq and max_size are ignored.
         min_freq: Minimum frequency of a token to be included in vocabularly.
         max_size: Maximum size of vocabularly. Tokens are added in order of frequency.
+        pad_token: Representation of padding token.
+        unk_token: Representation of unknown token.
         special_tokens: List of special tokens, added to vocabularly. Useful if creating
             encodings later.
 
