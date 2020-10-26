@@ -44,8 +44,19 @@ def main(cfg: DictConfig):
 
     if not cfg.dataset.fine_grained:
         filter_func = lambda x: x.label != "neutral"
+        target_encoding = {
+            "negative": 0, 
+            "positive": 1
+        }
     else:
         filter_func = None
+        target_encoding = {
+            "very negative": 0,
+            "negative": 1,
+            "neutral": 2,
+            "positive": 3,
+            "very positive": 4,
+        }
 
     # hydra generates a new working directory for each run
     # want to store data in same directory each run
@@ -67,7 +78,7 @@ def main(cfg: DictConfig):
     embed_mat = vectors.get_matrix(vocab)
 
     # 4. Setup encoder to encode examples
-    encoder = RNFEncoder(vocab=vocab, target_encoding={"negative": 0, "positive": 1})
+    encoder = RNFEncoder(vocab=vocab, target_encoding=target_encoding)
 
     # 5. Setup train, val and test dataloaders
     ds = DataModule(
