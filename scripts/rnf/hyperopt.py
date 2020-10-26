@@ -51,7 +51,7 @@ def objective(
         train=train,
         val=val,
         encoder=encoder,
-        batch_size=trial.suggest_int("batch_size", 16, 64),
+        batch_size=trial.suggest_int("batch_size", 32, 64),
     )
 
     # 6. Setup model
