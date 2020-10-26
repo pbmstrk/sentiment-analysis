@@ -16,6 +16,15 @@ DATASETS = {
 
 
 class TextDataset(Dataset):
+
+    r"""
+    Base class for Datasets. Subclasses torch.utils.data.Dataset
+
+    Args:
+        dataset: Dataset stored in list. Each element of the list is 
+            a named-tuple with elements text and label.
+    """
+
     def __init__(self, dataset: List[Example]):
         self.dataset = dataset
 

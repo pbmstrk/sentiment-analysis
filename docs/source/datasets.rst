@@ -1,18 +1,19 @@
 Datasets
 ========
 
-.. automodule:: text_classification.datasets
-.. currentmodule:: text_classification.datasets
 
 SSTDataset
 ----------
 
 
-.. autoclass:: SSTDataset
+.. autofunction:: text_classification.datasets.SSTDataset
 
 MRDataset
 ---------
 
+.. autofunction:: text_classification.datasets.MRDataset
 
-.. autoclass:: MRDataset
+Base Class
+----------
 
+.. autoclass:: text_classification.datasets.TextDataset

@@ -1,6 +1,6 @@
 import os
 from functools import partial
-from typing import Callable, Optional
+from typing import Callable, Optional, Tuple
 
 from ..utils import download_extract
 from ..utils.datasets import get_data_from_file, map_list_to_example, parse_line_tree
@@ -14,8 +14,8 @@ def SSTDataset(
     fine_grained: bool = False,
     tokenizer: Optional[Callable] = None,
     filter_func: Optional[Callable] = None,
-    override: bool = False,
-):
+    override: Optional[bool] = False,
+) -> Tuple[TextDataset, TextDataset, TextDataset]:
 
     r"""
     Load the Stanford Sentiment Treebank (SST) Dataset
