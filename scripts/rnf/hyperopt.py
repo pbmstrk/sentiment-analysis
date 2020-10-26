@@ -1,27 +1,27 @@
-
-import optuna
 import argparse
 from functools import partial
-from pytorch_lightning import Trainer, LightningModule, seed_everything
-from pytorch_lightning.callbacks import ModelCheckpoint
-from pytorch_lightning.callbacks import Callback
+from typing import Callable
+
+import numpy as np
+import optuna
+from pytorch_lightning import LightningModule, Trainer, seed_everything
+from pytorch_lightning.callbacks import Callback, ModelCheckpoint
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 
 from text_classification.datamodule import DataModule
-from text_classification.datasets import SSTDataset
+from text_classification.datasets import SSTDataset, TextDataset
 from text_classification.encoders import RNFEncoder
 from text_classification.models import RNF
 from text_classification.tokenizers import SpacyTokenizer
 from text_classification.vectors import GloVe
 from text_classification.vocab import Vocab
 
-class OptunaCallback(Callback):
 
+class OptunaCallback(Callback):
     def __init__(self, trial: optuna.trial.Trial, monitor: str) -> None:
 
         self.trial = trial
         self.monitor = monitor
-
 
     def on_epoch_end(self, trainer: Trainer, pl_module: LightningModule) -> None:
 
@@ -34,8 +34,15 @@ class OptunaCallback(Callback):
             message = "Trial was pruned at epoch {}.".format(epoch)
             raise optuna.TrialPruned(message)
 
- 
-def objective(trial, args, train, val, encoder, embed_mat):
+
+def objective(
+    trial: optuna.trial.Trial,
+    args: argparse.Namespace,
+    train: TextDataset,
+    val: TextDataset,
+    encoder: Callable,
+    embed_mat: np.ndarray,
+) -> float:
 
     seed_everything(42)
 
@@ -56,7 +63,7 @@ def objective(trial, args, train, val, encoder, embed_mat):
         filter_width=trial.suggest_int("filter_width", 5, 8),
         embed_dropout=trial.suggest_float("embed_dropout", 0.2, 0.4, step=0.05),
         dropout=trial.suggest_float("dropout", 0.2, 0.4, step=0.05),
-        lr=trial.suggest_float("lr", 0.0001, 0.001, step=0.00005)
+        lr=trial.suggest_float("lr", 0.0001, 0.001, step=0.00005),
     )
 
     # 7. Setup trainer
@@ -79,7 +86,10 @@ def objective(trial, args, train, val, encoder, embed_mat):
     trainer = Trainer(
         checkpoint_callback=checkpoint_callback,
         callbacks=[OptunaCallback(trial, "val_epoch_loss"), early_stop_callback],
-        gpus=1, progress_bar_refresh_rate=0, max_epochs=15, deterministic=True
+        gpus=1,
+        progress_bar_refresh_rate=0,
+        max_epochs=15,
+        deterministic=True,
     )
 
     # 8. Fit model
@@ -90,13 +100,14 @@ def objective(trial, args, train, val, encoder, embed_mat):
         model, ds.val_dataloader(), ckpt_path=checkpoint_callback.best_model_path
     )
 
-    return results[0]['test_epoch_loss']
+    # not actually results on test set - key stems from test_epoch_end
+    return results[0]["test_epoch_loss"]
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--fine_grained", action = "store_true")
-    parser.add_argument("--train_subtrees", action = "store_true")
+    parser.add_argument("--fine_grained", action="store_true")
+    parser.add_argument("--train_subtrees", action="store_true")
     parser.add_argument("--min_freq", default=1, type=int)
     args = parser.parse_args()
     print(args)
@@ -104,10 +115,7 @@ if __name__ == "__main__":
     # define filter function and target encoding
     if not args.fine_grained:
         filter_func = lambda x: x.label != "neutral"
-        target_encoding = {
-            "negative": 0, 
-            "positive": 1
-        }
+        target_encoding = {"negative": 0, "positive": 1}
     else:
         filter_func = None
         target_encoding = {
@@ -119,8 +127,11 @@ if __name__ == "__main__":
         }
 
     # get data
-    train_data, val_data, _ = SSTDataset(filter_func=filter_func, tokenizer=SpacyTokenizer(), 
-            train_subtrees=args.train_subtrees, fine_grained=args.fine_grained
+    train_data, val_data, _ = SSTDataset(
+        filter_func=filter_func,
+        tokenizer=SpacyTokenizer(),
+        train_subtrees=args.train_subtrees,
+        fine_grained=args.fine_grained,
     )
 
     # get vocab
@@ -133,13 +144,19 @@ if __name__ == "__main__":
     # 4. Setup encoder to encode examples
     encoder = RNFEncoder(vocab=vocab, target_encoding=target_encoding)
 
-    objective = partial(objective, args=args, train=train_data, val=val_data, encoder=encoder,
-                            embed_mat=embed_mat)
+    objective = partial(
+        objective,
+        args=args,
+        train=train_data,
+        val=val_data,
+        encoder=encoder,
+        embed_mat=embed_mat,
+    )
 
     pruner = optuna.pruners.MedianPruner()
 
     study = optuna.create_study(direction="minimize", pruner=pruner)
-    study.optimize(objective, n_trials=30, timeout=1200)
+    study.optimize(objective, n_trials=30, timeout=None)
 
     print("Best trial:")
     trial = study.best_trial
