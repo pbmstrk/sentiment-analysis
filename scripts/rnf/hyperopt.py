@@ -71,14 +71,14 @@ def objective(
         monitor="val_epoch_loss",
         min_delta=0.0001,
         patience=3,
-        verbose=False,
+        verbose=True,
         mode="min",
     )
 
     checkpoint_callback = ModelCheckpoint(
         filepath="./checkpoints/" + "{epoch}",
         save_top_k=1,
-        verbose=False,
+        verbose=True,
         monitor="val_epoch_loss",
         mode="min",
     )
