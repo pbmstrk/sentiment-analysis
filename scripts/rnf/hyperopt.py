@@ -35,35 +35,14 @@ class OptunaCallback(Callback):
             raise optuna.TrialPruned(message)
 
  
-def objective(trial, args):
+def objective(trial, args, train, val, encoder, embed_mat):
 
     seed_everything(42)
-
-    if not args.fine_grained:
-        filter_func = lambda x: x.label != "neutral"
-    else:
-        filter_func = None
-
-    # 1. Get SST dataset
-    train, val, test = SSTDataset(filter_func=filter_func, tokenizer=SpacyTokenizer(), 
-            train_subtrees=True, fine_grained=args.fine_grained
-    )
-
-    # 2. Get vocab
-    vocab = Vocab(train)
-
-    # 3. Retrieve pre-trained embeddings
-    vectors = GloVe(name="840B", dim=300)
-    embed_mat = vectors.get_matrix(vocab)
-
-    # 4. Setup encoder to encode examples
-    encoder = RNFEncoder(vocab=vocab, target_encoding={"negative": 0, "positive": 1})
 
     # 5. Setup train, val and test dataloaders
     ds = DataModule(
         train=train,
         val=val,
-        test=test,
         encoder=encoder,
         batch_size=trial.suggest_int("batch_size", 16, 64),
     )
@@ -75,9 +54,9 @@ def objective(trial, args):
         num_class=num_class,
         embed_mat=embed_mat,
         filter_width=trial.suggest_int("filter_width", 5, 8),
-        embed_dropout=trial.suggest_float("embed_dropout", 0.2, 0.4),
-        dropout=trial.suggest_float("dropout", 0.2, 0.4),
-        lr=trial.suggest_float("lr", 0.0001, 0.001)
+        embed_dropout=trial.suggest_float("embed_dropout", 0.2, 0.4, step=0.05),
+        dropout=trial.suggest_float("dropout", 0.2, 0.4, step=0.05),
+        lr=trial.suggest_float("lr", 0.0001, 0.001, step=0.00005)
     )
 
     # 7. Setup trainer
@@ -111,15 +90,51 @@ def objective(trial, args):
         model, ds.val_dataloader(), ckpt_path=checkpoint_callback.best_model_path
     )
 
-    return results['test_epoch_loss']
+    return results[0]['test_epoch_loss']
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--fine_grained", action = "store_true")
+    parser.add_argument("--train_subtrees", action = "store_true")
+    parser.add_argument("--min_freq", default=1, type=int)
     args = parser.parse_args()
+    print(args)
 
-    objective = partial(objective, args=args)
+    # define filter function and target encoding
+    if not args.fine_grained:
+        filter_func = lambda x: x.label != "neutral"
+        target_encoding = {
+            "negative": 0, 
+            "positive": 1
+        }
+    else:
+        filter_func = None
+        target_encoding = {
+            "very negative": 0,
+            "negative": 1,
+            "neutral": 2,
+            "positive": 3,
+            "very positive": 4,
+        }
+
+    # get data
+    train_data, val_data, _ = SSTDataset(filter_func=filter_func, tokenizer=SpacyTokenizer(), 
+            train_subtrees=args.train_subtrees, fine_grained=args.fine_grained
+    )
+
+    # get vocab
+    vocab = Vocab(train_data, min_freq=args.min_freq)
+
+    # get vectors
+    vectors = GloVe(name="840B", dim=300)
+    embed_mat = vectors.get_matrix(vocab)
+
+    # 4. Setup encoder to encode examples
+    encoder = RNFEncoder(vocab=vocab, target_encoding=target_encoding)
+
+    objective = partial(objective, args=args, train=train_data, val=val_data, encoder=encoder,
+                            embed_mat=embed_mat)
 
     pruner = optuna.pruners.MedianPruner()
 
