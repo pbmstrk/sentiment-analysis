@@ -153,7 +153,7 @@ if __name__ == "__main__":
         embed_mat=embed_mat,
     )
 
-    pruner = optuna.pruners.MedianPruner()
+    pruner = optuna.pruners.PercentilePruner(0.5, n_warmup_steps=5)
 
     study = optuna.create_study(direction="minimize", pruner=pruner)
     study.optimize(objective, n_trials=30, timeout=None)
