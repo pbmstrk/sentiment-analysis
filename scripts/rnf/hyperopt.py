@@ -97,7 +97,7 @@ def objective(
 
     # 9. Test model
     results = trainer.test(
-        model, ds.val_dataloader(), ckpt_path=checkpoint_callback.best_model_path
+        ds.val_dataloader(), ckpt_path=checkpoint_callback.best_model_path
     )
 
     # not actually results on test set - key stems from test_epoch_end

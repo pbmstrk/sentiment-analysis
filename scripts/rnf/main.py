@@ -122,7 +122,7 @@ def main(cfg: DictConfig):
 
     # 9. Test model
     results = trainer.test(
-        model, ds.test_dataloader(), ckpt_path=checkpoint_callback.best_model_path
+        ds.test_dataloader(), ckpt_path=checkpoint_callback.best_model_path
     )
 
     log.info(results)
