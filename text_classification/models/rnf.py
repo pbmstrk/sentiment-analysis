@@ -2,6 +2,7 @@ import pytorch_lightning as pl
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from typing import Dict
 
 from text_classification.models.base import BaseClassifier
 
@@ -72,7 +73,9 @@ class RNF(BaseClassifier):
         embed_mat: Pre-trained word-embedddings. Size should match (input_size, embed_dim)
         freeze_embed: Freeze embedding weights during training. For example, to keep pre-trained
             vectors (e.g. GloVe) fixed during training
-        lr: learning rate of the optimizer.
+        optimizer_name: Optimzer to use during training, pass name of optimizer found in
+            torch.optim module
+        optimizer_args: Arguments to pass to optimizer.
 
     Example::
 
@@ -91,7 +94,8 @@ class RNF(BaseClassifier):
         dropout: float = 0.4,
         embed_mat=None,
         freeze_embed: bool = False,
-        lr: float = 0.001,
+        optimizer_name: str = "Adam",
+        optimizer_args: Dict = {"lr": 0.001}
     ):
         # add freeze to embeds
         super().__init__()
@@ -105,7 +109,8 @@ class RNF(BaseClassifier):
         self.dropout = dropout
         self.embed_mat = embed_mat
         self.freeze_embed = freeze_embed
-        self.lr = lr
+        self.optimizer_name = optimizer_name
+        self.optimizer_args = optimizer_args
 
         self.embedding = nn.Embedding(self.input_size, self.embed_dim, padding_idx=0)
         if self.embed_mat is not None:
@@ -150,5 +155,6 @@ class RNF(BaseClassifier):
         return outputs.squeeze()
 
     def configure_optimizers(self):
-        optimizer = torch.optim.Adam(self.parameters(), lr=self.lr, weight_decay=1e-05)
+        optimizer = getattr(torch.optim, self.optimizer_name)(self.parameters(),
+                                **self.optimizer_args)
         return optimizer
