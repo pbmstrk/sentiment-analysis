@@ -1,1 +1,1 @@
-from .tokenizers import BaseTokenizer, SimpleTokenizer, SpacyTokenizer
+from .tokenizers import BaseTokenizer, WhiteSpaceTokenizer, SpacyTokenizer
