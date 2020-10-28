@@ -25,7 +25,7 @@ class RNFEncoder(BaseEncoder):
         # pad the sequences
         x = pad_sequence(data, batch_first=True)
 
-        return x, torch.Tensor(targets).long()
+        return x.long(), torch.Tensor(targets).long()
 
     def _encode(self, example):
 
