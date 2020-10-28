@@ -51,7 +51,7 @@ def objective(
         train=train,
         val=val,
         encoder=encoder,
-        batch_size=trial.suggest_int("batch_size", 32, 64),
+        batch_size=64,
     )
 
     # 6. Setup model
@@ -97,7 +97,7 @@ def objective(
 
     # 9. Test model
     results = trainer.test(
-        ds.val_dataloader(), ckpt_path=checkpoint_callback.best_model_path
+        test_dataloaders=ds.val_dataloader(), ckpt_path=checkpoint_callback.best_model_path
     )
 
     # not actually results on test set - key stems from test_epoch_end
