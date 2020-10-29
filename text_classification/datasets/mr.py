@@ -16,7 +16,7 @@ def MRDataset(
     name: str = "mr",
     tokenizer: Optional[Callable] = None,
     filter_func: Optional[Callable] = None,
-    override: Optional[bool] = False
+    override: Optional[bool] = False,
 ) -> TextDataset:
 
     r"""

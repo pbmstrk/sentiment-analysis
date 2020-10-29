@@ -21,7 +21,7 @@ class TextDataset(Dataset):
     Base class for Datasets. Subclasses torch.utils.data.Dataset
 
     Args:
-        dataset: Dataset stored in list. Each element of the list is 
+        dataset: Dataset stored in list. Each element of the list is
             a named-tuple with elements text and label.
     """
 

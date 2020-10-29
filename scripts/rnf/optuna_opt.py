@@ -10,7 +10,7 @@ from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 
 from text_classification.datamodule import DataModule
 from text_classification.datasets import SSTDataset, TextDataset
-from text_classification.encoders import RNFEncoder
+from text_classification.encoders import CNNEncoder
 from text_classification.models import RNF
 from text_classification.tokenizers import SpacyTokenizer
 from text_classification.vectors import GloVe
@@ -97,7 +97,8 @@ def objective(
 
     # 9. Test model
     results = trainer.test(
-        test_dataloaders=ds.val_dataloader(), ckpt_path=checkpoint_callback.best_model_path
+        test_dataloaders=ds.val_dataloader(),
+        ckpt_path=checkpoint_callback.best_model_path,
     )
 
     # not actually results on test set - key stems from test_epoch_end
@@ -142,7 +143,7 @@ if __name__ == "__main__":
     embed_mat = vectors.get_matrix(vocab)
 
     # 4. Setup encoder to encode examples
-    encoder = RNFEncoder(vocab=vocab, target_encoding=target_encoding)
+    encoder = CNNEncoder(vocab=vocab, target_encoding=target_encoding)
 
     objective = partial(
         objective,

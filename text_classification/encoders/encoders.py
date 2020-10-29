@@ -10,7 +10,7 @@ class BaseEncoder:
         raise NotImplementedError
 
 
-class RNFEncoder(BaseEncoder):
+class CNNEncoder(BaseEncoder):
     def __init__(self, vocab, target_encoding):
         self.vocab = vocab
         self.target_encoding = target_encoding

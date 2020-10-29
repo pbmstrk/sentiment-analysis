@@ -61,7 +61,7 @@ def download_file(
             _process_resp(resp, filepath)
     else:
         print(f"Found file at {os.path.join(root, name)} skipping download.")
-        return 
+        return
 
     return filepath
 
@@ -90,12 +90,14 @@ def download_extract(
     root: str = ".data",
     override: bool = False,
     filename: Optional[str] = None,
-    extract_only: Optional[bool] = False
+    extract_only: Optional[bool] = False,
 ):
     extract_dir = os.path.join(root, name)
 
     if extract_only:
         extract_from_file(os.path.join(root, name, filename), os.path.join(root, name))
     else:
-        zfile = download_file(url, name, root=root, override=override, filename=filename)
+        zfile = download_file(
+            url, name, root=root, override=override, filename=filename
+        )
         extract_from_file(zfile, extract_dir)
