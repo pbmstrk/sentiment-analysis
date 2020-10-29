@@ -1,5 +1,5 @@
 from text_classification.datasets import MRDataset, SSTDataset
-from text_classification.tokenizers import SimpleTokenizer, SpacyTokenizer
+from text_classification.tokenizers import WhiteSpaceTokenizer, SpacyTokenizer
 
 
 def assert_size_sst(train, val, test):
@@ -36,7 +36,7 @@ class TestData:
         train, val, test = SSTDataset(
             filter_func=lambda x: x.label != "neutral",
             root=tmpdir,
-            tokenizer=SimpleTokenizer(),
+            tokenizer=WhiteSpaceTokenizer(),
             train_subtrees=True,
         )
 
@@ -49,5 +49,5 @@ class TestData:
         # test access
         mr_data[0]
 
-        mr_data = MRDataset(root=tmpdir, tokenizer=SimpleTokenizer())
+        mr_data = MRDataset(root=tmpdir, tokenizer=WhiteSpaceTokenizer())
         assert_size_mr(mr_data)

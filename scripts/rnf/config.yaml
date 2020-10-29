@@ -10,7 +10,9 @@ model:
     embed_dropout: 0.4
     dropout: 0.4
     freeze_embed: True
-    lr: 0.001
+    optimizer_name: "Adam"
+    optimizer_args:
+      lr: 0.001
 datamodule:
     batch_size: 64
 trainer:

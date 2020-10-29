@@ -76,7 +76,7 @@ def objective(
     )
 
     checkpoint_callback = ModelCheckpoint(
-        filepath="./checkpoints/" + "{epoch}",
+        filepath="./checkpoints/" + "trial_{}".format(trial.number) + "{epoch}",
         save_top_k=1,
         verbose=True,
         monitor="val_epoch_loss",
@@ -153,7 +153,7 @@ if __name__ == "__main__":
         embed_mat=embed_mat,
     )
 
-    pruner = optuna.pruners.MedianPruner()
+    pruner = optuna.pruners.PercentilePruner(0.5, n_warmup_steps=7)
 
     study = optuna.create_study(direction="minimize", pruner=pruner)
     study.optimize(objective, n_trials=30, timeout=None)

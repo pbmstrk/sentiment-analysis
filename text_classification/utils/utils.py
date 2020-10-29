@@ -60,7 +60,7 @@ def download_file(
 
             _process_resp(resp, filepath)
     else:
-        print(f"Found file at {os.path.join(root, name)} stopping download.")
+        print(f"Found file at {os.path.join(root, name)} skipping download.")
         return 
 
     return filepath

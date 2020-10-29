@@ -10,7 +10,7 @@ class BaseTokenizer:
         raise NotImplementedError
 
 
-class SimpleTokenizer(BaseTokenizer):
+class WhiteSpaceTokenizer(BaseTokenizer):
     def __init__(self, split=" "):
         self.split = split
 
