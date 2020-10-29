@@ -6,28 +6,14 @@ from torch.utils.data import DataLoader, Dataset
 
 from text_classification.models import RNF
 
-from .base import ModelTest
-
-
-class FakeRNFDataset(Dataset):
-    def __init__(self, num_input, num_output):
-        self.num_input = num_input
-        self.num_output = num_output
-        self.inputs = torch.randint(0, self.num_input, (100, 15))
-        self.targets = torch.randint(0, self.num_output, (100,))
-
-    def __len__(self):
-        return len(self.targets)
-
-    def __getitem__(self, idx):
-        return self.inputs[idx], self.targets[idx]
+from .base import ModelTest, FakeCNNDataset
 
 
 class TestRNF(ModelTest):
     def test_output_shape(self):
 
         # define data
-        data = FakeRNFDataset(10, 5)
+        data = FakeCNNDataset(10, 5)
         dataloader = DataLoader(data, batch_size=32)
 
         # define model
@@ -40,7 +26,7 @@ class TestRNF(ModelTest):
     def test_forward_backward(self):
 
         # define data
-        data = FakeRNFDataset(10, 5)
+        data = FakeCNNDataset(10, 5)
         dataloader = DataLoader(data, batch_size=32)
 
         # define trainer options
@@ -63,7 +49,7 @@ class TestRNF(ModelTest):
     def test_forward_backward_gpu(self):
 
         # define data
-        data = FakeRNFDataset(10, 5)
+        data = FakeCNNDataset(10, 5)
         dataloader = DataLoader(data, batch_size=32)
 
         # define trainer options
@@ -85,7 +71,7 @@ class TestRNF(ModelTest):
 
     def test_weight_freeze(self):
 
-        data = FakeRNFDataset(10, 5)
+        data = FakeCNNDataset(10, 5)
         dataloader = DataLoader(data, batch_size=32)
 
         trainer_options = {
