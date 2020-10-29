@@ -25,4 +25,4 @@ class SpacyTokenizer(BaseTokenizer):
 
     def __call__(self, x: str) -> List:
         tokens = self.nlp(x)
-        return [token.lower_ for token in tokens if not token.is_punct]
+        return [token.lower_ for token in tokens]
