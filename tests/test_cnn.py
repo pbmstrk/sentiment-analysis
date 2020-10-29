@@ -4,7 +4,7 @@ import pytorch_lightning as pl
 import torch
 from torch.utils.data import DataLoader
 
-from text_classification.models import RNF
+from text_classification.models import TextCNN
 
 from .base import ModelTest, FakeCNNDataset
 
@@ -18,7 +18,7 @@ class TestRNF(ModelTest):
 
         # define model
         model_options = {"input_size": data.num_input, "num_class": data.num_output}
-        model = RNF(**model_options)
+        model = TextCNN(**model_options)
 
         # run test
         self.check_output_shape(model, dataloader, torch.Size([32, 5]))
@@ -40,7 +40,7 @@ class TestRNF(ModelTest):
 
         # define model
         model_options = {"input_size": data.num_input, "num_class": data.num_output}
-        model = RNF(**model_options)
+        model = TextCNN(**model_options)
 
         # run test
         self.run_model_test(trainer_options, model, dataloader)
@@ -64,7 +64,7 @@ class TestRNF(ModelTest):
 
         # define model
         model_options = {"input_size": data.num_input, "num_class": data.num_output}
-        model = RNF(**model_options)
+        model = TextCNN(**model_options)
 
         # run test
         self.run_model_test(trainer_options, model, dataloader)
@@ -93,8 +93,8 @@ class TestRNF(ModelTest):
             "embed_mat": embed_mat,
         }
 
-        model_before = RNF(**model_options)
-        model_after = RNF(**model_options)
+        model_before = TextCNN(**model_options)
+        model_after = TextCNN(**model_options)
         model_after.load_state_dict(model_before.state_dict())
 
         # check if embedding weight is correctly loaded and remains fixed

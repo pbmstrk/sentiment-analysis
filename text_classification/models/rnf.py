@@ -1,8 +1,10 @@
+from typing import Dict, Optional
+
+import numpy as np
 import pytorch_lightning as pl
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from typing import Dict
 
 from text_classification.models.base import BaseClassifier
 
@@ -92,12 +94,12 @@ class RNF(BaseClassifier):
         hidden_dim: int = 300,
         embed_dropout: float = 0.4,
         dropout: float = 0.4,
-        embed_mat=None,
-        freeze_embed: bool = False,
+        embed_mat: Optional[np.ndarray] = None,
+        freeze_embed: bool = True,
         optimizer_name: str = "Adam",
-        optimizer_args: Dict = {"lr": 0.001}
+        optimizer_args: Dict = {"lr": 0.001},
     ):
-        # add freeze to embeds
+
         super().__init__()
 
         self.input_size = input_size
@@ -155,6 +157,7 @@ class RNF(BaseClassifier):
         return outputs.squeeze()
 
     def configure_optimizers(self):
-        optimizer = getattr(torch.optim, self.optimizer_name)(self.parameters(),
-                                **self.optimizer_args)
+        optimizer = getattr(torch.optim, self.optimizer_name)(
+            self.parameters(), **self.optimizer_args
+        )
         return optimizer

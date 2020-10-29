@@ -1,5 +1,19 @@
 import pytorch_lightning as pl
 import torch
+from torch.utils.data import Dataset
+
+class FakeCNNDataset(Dataset):
+    def __init__(self, num_input, num_output):
+        self.num_input = num_input
+        self.num_output = num_output
+        self.inputs = torch.randint(0, self.num_input, (100, 15))
+        self.targets = torch.randint(0, self.num_output, (100,))
+
+    def __len__(self):
+        return len(self.targets)
+
+    def __getitem__(self, idx):
+        return self.inputs[idx], self.targets[idx]
 
 
 class ModelTest:

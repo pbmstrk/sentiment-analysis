@@ -22,8 +22,8 @@ def extract_vectors(filepath: str) -> Dict:
                 continue
     return embedding_map
 
-class Vectors:
 
+class Vectors:
     def __init__(self, dim: int, vector_map: Dict):
         self.vector_map = vector_map
         self.dim = dim
@@ -34,7 +34,7 @@ class Vectors:
         Returns an embedding matrix (lookup table) of word vectors given a vocabularly.
 
         Args:
-            vocab: Vocabularly to build matrix for. Can either be an instance of Vocab() or 
+            vocab: Vocabularly to build matrix for. Can either be an instance of Vocab() or
                 a list. Words that have no embedding are initialised randomly.
         """
 
@@ -92,6 +92,3 @@ def GloVe(name: str, dim: int, root: str = ".data") -> Vectors:
 
 # perhaps load with gensim and covert to dict
 # on pause at the moment
-
-
-

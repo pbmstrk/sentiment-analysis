@@ -1,1 +1,1 @@
-from .encoders import RNFEncoder
+from .encoders import CNNEncoder

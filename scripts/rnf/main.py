@@ -8,7 +8,7 @@ from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 
 from text_classification.datamodule import DataModule
 from text_classification.datasets import SSTDataset
-from text_classification.encoders import RNFEncoder
+from text_classification.encoders import CNNEncoder
 from text_classification.models import RNF
 from text_classification.tokenizers import SpacyTokenizer
 from text_classification.vectors import GloVe
@@ -43,10 +43,7 @@ def main(cfg: DictConfig):
 
     if not cfg.dataset.fine_grained:
         filter_func = lambda x: x.label != "neutral"
-        target_encoding = {
-            "negative": 0, 
-            "positive": 1
-        }
+        target_encoding = {"negative": 0, "positive": 1}
     else:
         filter_func = None
         target_encoding = {
@@ -77,7 +74,7 @@ def main(cfg: DictConfig):
     embed_mat = vectors.get_matrix(vocab)
 
     # 4. Setup encoder to encode examples
-    encoder = RNFEncoder(vocab=vocab, target_encoding=target_encoding)
+    encoder = CNNEncoder(vocab=vocab, target_encoding=target_encoding)
 
     # 5. Setup train, val and test dataloaders
     ds = DataModule(
@@ -122,7 +119,8 @@ def main(cfg: DictConfig):
 
     # 9. Test model
     results = trainer.test(
-        test_dataloaders=ds.test_dataloader(), ckpt_path=checkpoint_callback.best_model_path
+        test_dataloaders=ds.test_dataloader(),
+        ckpt_path=checkpoint_callback.best_model_path,
     )
 
     log.info(results)
