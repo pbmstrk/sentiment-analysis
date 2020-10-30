@@ -44,7 +44,7 @@ class Vectors:
             try:
                 weights_matrix[i] = self.vector_map[word]
             except KeyError:
-                weights_matrix[i] = np.random.normal(scale=0.25, size=(self.dim,))
+                weights_matrix[i] = np.random.uniform(-0.25, 0.25, size=(self.dim,))
         return weights_matrix
 
 
