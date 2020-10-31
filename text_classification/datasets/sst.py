@@ -68,9 +68,15 @@ def SSTDataset(
     val_test_parser = partial(parse_line_tree, subtrees=False)
 
     # get data from all files using defined parser
-    train = get_data_from_file(os.path.join(root, name, dir_name, "train.txt"), train_parser)
-    val = get_data_from_file(os.path.join(root, name, dir_name, "dev.txt"), val_test_parser)
-    test = get_data_from_file(os.path.join(root, name, dir_name, "test.txt"), val_test_parser)
+    train = get_data_from_file(
+        os.path.join(root, name, dir_name, "train.txt"), train_parser
+    )
+    val = get_data_from_file(
+        os.path.join(root, name, dir_name, "dev.txt"), val_test_parser
+    )
+    test = get_data_from_file(
+        os.path.join(root, name, dir_name, "test.txt"), val_test_parser
+    )
 
     # data: List of lists. Using map function to filter, tokenize and convert to list of Examples
     map_f = partial(

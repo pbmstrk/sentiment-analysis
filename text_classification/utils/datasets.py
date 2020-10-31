@@ -30,8 +30,8 @@ def get_data_from_file(filepath: str, parser: Callable, errors: Optional[str] = 
 
 def map_list_to_example(
     element: List,
-    tokenizer: Optional[Callable],
-    filter_func: Optional[Callable],
+    tokenizer: Optional[Callable] = None,
+    filter_func: Optional[Callable] = None,
     label_map: Optional[dict] = None,
 ):
 
