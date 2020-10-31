@@ -36,34 +36,3 @@ class TextDataset(Dataset):
     def __getitem__(self, idx):
         example = self.dataset[idx]
         return example.text, example.label
-
-
-class TextDataFromFile(Dataset):
-    def __init__(
-        self,
-        filepath: str,
-        parser: Callable,
-        tokenizer: Optional[Callable] = None,
-        label_map: Optional[Dict] = None,
-    ):
-        self.filepath = filepath
-        self.parser = parser
-        self.tokenizer = tokenizer
-        self.label_map = label_map
-
-        self.dataset = self._build_dataset()
-
-    def _build_dataset(self):
-
-        data = get_data_from_file(self.filepath, self.parser)
-        dataset = map_list_to_example(
-            data, tokenizer=self.tokenizer, label_map=self.label_map
-        )
-        return dataset
-
-    def __len__(self):
-        return len(self.dataset)
-
-    def __getitem__(self, idx):
-        example = self.dataset[idx]
-        return example.text, example.label
