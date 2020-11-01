@@ -14,7 +14,7 @@ def SSTDataset(
     fine_grained: bool = False,
     tokenizer: Optional[Callable] = None,
     filter_func: Optional[Callable] = None,
-    override: Optional[bool] = False,
+    override: bool = False,
 ) -> Tuple[TextDataset, TextDataset, TextDataset]:
 
     r"""

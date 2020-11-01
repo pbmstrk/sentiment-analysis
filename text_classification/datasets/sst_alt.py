@@ -17,7 +17,7 @@ def SSTDatasetAlt(
     train_subtrees: bool = False,
     fine_grained: bool = False,
     tokenizer: Optional[Callable] = None,
-    override: Optional[bool] = False,
+    override: bool = False,
 ) -> Tuple[TextDataset, TextDataset, TextDataset]:
 
     # adapted from https://github.com/pytorch/text/blob/master/torchtext/datasets/sst.py#L34-L36
