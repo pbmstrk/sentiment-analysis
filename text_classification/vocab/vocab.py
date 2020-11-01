@@ -30,7 +30,7 @@ class Vocab:
 
     def __init__(
         self,
-        data: Union[List, TextDataset],
+        data: Union[List[str], TextDataset, List[TextDataset]],
         min_freq: int = 1,
         max_size: Optional[int] = None,
         pad_token: Optional[str] = "<pad>",
@@ -89,19 +89,19 @@ class Vocab:
         return [item for sublist in lst for item in sublist]
 
     @classmethod
-    def process_dataset(cls, data: Union[TextDataset, List]) -> Counter:
+    def process_dataset(
+        cls, data: Union[TextDataset, List[str], List[TextDataset]]
+    ) -> Counter:
         if isinstance(data, TextDataset):
-            cls.check_input(data[0][0])
             list_of_vocab = cls.flatten([example[0] for example in data])
-        elif isinstance(data, list):
+        elif all(isinstance(element, TextDataset) for element in data):
+            list_of_vocab = []
+            for dataset in data:
+                list_of_vocab.extend(cls.flatten([example[0] for example in dataset]))
+        elif all(isinstance(element, str) for element in data):
             list_of_vocab = data
         vocab_count = Counter(list_of_vocab)
         return vocab_count
-
-    @staticmethod
-    def check_input(example):
-        if isinstance(example, str):
-            raise ValueError("Input is string, rather than list of strings")
 
     def __iter__(self):
         return iter(self.encoding)

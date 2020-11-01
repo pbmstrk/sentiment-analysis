@@ -2,8 +2,6 @@ from typing import Callable, Dict, List, NamedTuple, Optional, Union
 
 from torch.utils.data import Dataset
 
-from text_classification.utils.datasets import get_data_from_file, map_list_to_example
-
 
 # could use Dataclass here (choose not to for python 3.5 compatability)
 class Example(NamedTuple):
@@ -14,6 +12,7 @@ class Example(NamedTuple):
 DATASETS = {
     "sst": "http://nlp.stanford.edu/sentiment/trainDevTestTrees_PTB.zip",
     "mr": "https://www.cs.cornell.edu/people/pabo/movie-review-data/rt-polaritydata.tar.gz",
+    "sst-alt": "https://docs.google.com/uc?export=download&id=1mF8LQOif416Kx9pyktPlHLwDtAff-1ea",
 }
 
 

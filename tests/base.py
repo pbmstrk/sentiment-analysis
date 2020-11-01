@@ -2,6 +2,7 @@ import pytorch_lightning as pl
 import torch
 from torch.utils.data import Dataset
 
+
 class FakeCNNDataset(Dataset):
     def __init__(self, num_input, num_output):
         self.num_input = num_input

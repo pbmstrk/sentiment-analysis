@@ -6,7 +6,7 @@ from torch.utils.data import DataLoader
 
 from text_classification.models import TextCNN
 
-from .base import ModelTest, FakeCNNDataset
+from .base import FakeCNNDataset, ModelTest
 
 
 class TestRNF(ModelTest):
