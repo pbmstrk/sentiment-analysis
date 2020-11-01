@@ -8,12 +8,12 @@ from text_classification.vocab import Vocab
 class TestVocab:
     def test_from_dataset(self):
 
-        exs = [
-            Example(text=["Test", "the", "vocab", "class"], label=None),
-            Example(text=["another", "example"], label=None),
-        ]
-
-        dataset = TextDataset(exs)
+        dataset = TextDataset(
+            [
+                Example(text=["Test", "the", "vocab", "class"], label=None),
+                Example(text=["another", "example"], label=None),
+            ]
+        )
 
         vocab = Vocab(dataset)
 
@@ -27,11 +27,17 @@ class TestVocab:
 
         assert len(vocab) == 6 + vocab.num_all_special_tokens
 
-    def test_error(self):
+    def test_from_multiple_datasets(self):
 
-        exs = [Example(text="Test the vocab class", label=None)]
+        dataset1 = TextDataset(
+            [
+                Example(text=["Test", "the", "vocab", "class"], label=None),
+                Example(text=["another", "example"], label=None),
+            ]
+        )
 
-        dataset = TextDataset(exs)
+        dataset2 = TextDataset([Example(text=["Second", "dataset"], label=None)])
 
-        with pytest.raises(ValueError):
-            Vocab(dataset)
+        vocab = Vocab([dataset1, dataset2])
+
+        assert len(vocab) == 8 + vocab.num_all_special_tokens

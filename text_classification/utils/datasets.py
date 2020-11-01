@@ -19,6 +19,12 @@ def parse_line_without_label(line, label):
     return ([" ".join(line.split()), label],)
 
 
+def parse_line_label_first(line):
+
+    data = line.split()
+    return ([" ".join(data[1:]), data[0]],)
+
+
 def get_data_from_file(filepath: str, parser: Callable, errors: Optional[str] = None):
 
     exs = []
@@ -30,8 +36,8 @@ def get_data_from_file(filepath: str, parser: Callable, errors: Optional[str] = 
 
 def map_list_to_example(
     element: List,
-    tokenizer: Optional[Callable],
-    filter_func: Optional[Callable],
+    tokenizer: Optional[Callable] = None,
+    filter_func: Optional[Callable] = None,
     label_map: Optional[dict] = None,
 ):
 

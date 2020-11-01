@@ -1,4 +1,4 @@
-from typing import List, NamedTuple, Union
+from typing import Callable, Dict, List, NamedTuple, Optional, Union
 
 from torch.utils.data import Dataset
 
@@ -12,6 +12,7 @@ class Example(NamedTuple):
 DATASETS = {
     "sst": "http://nlp.stanford.edu/sentiment/trainDevTestTrees_PTB.zip",
     "mr": "https://www.cs.cornell.edu/people/pabo/movie-review-data/rt-polaritydata.tar.gz",
+    "sst-alt": "https://docs.google.com/uc?export=download&id=1mF8LQOif416Kx9pyktPlHLwDtAff-1ea",
 }
 
 
