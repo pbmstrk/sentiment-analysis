@@ -7,10 +7,10 @@ from pytorch_lightning.callbacks import Callback, ModelCheckpoint
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 
 from text_classification.datamodule import DataModule
-from text_classification.datasets import SSTDataset
+from text_classification.datasets import SSTDatasetAlt
 from text_classification.encoders import CNNEncoder
 from text_classification.models import RNF
-from text_classification.tokenizers import SpacyTokenizer
+from text_classification.tokenizers import TokenizerSST
 from text_classification.vectors import GloVe
 from text_classification.vocab import Vocab
 
@@ -42,10 +42,8 @@ def main(cfg: DictConfig):
     seed_everything(42)
 
     if not cfg.dataset.fine_grained:
-        filter_func = lambda x: x.label != "neutral"
         target_encoding = {"negative": 0, "positive": 1}
     else:
-        filter_func = None
         target_encoding = {
             "very negative": 0,
             "negative": 1,
@@ -60,13 +58,13 @@ def main(cfg: DictConfig):
 
     log.info("Downloading data...")
     # 1. Get SST dataset
-    train, val, test = SSTDataset(
-        root=root, filter_func=filter_func, tokenizer=SpacyTokenizer(), **cfg.dataset
+    train, val, test = SSTDatasetAlt(
+        root=root, tokenizer=TokenizerSST(), **cfg.dataset
     )
 
     log.info("Creating vocab...")
     # 2. Get vocab
-    vocab = Vocab(train, **cfg.vocab)
+    vocab = Vocab([train, val, test], **cfg.vocab)
 
     log.info("Downloading pre-trained word vectors...")
     # 3. Retrieve pre-trained embeddings

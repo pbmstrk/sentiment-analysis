@@ -9,10 +9,10 @@ from pytorch_lightning.callbacks import Callback, ModelCheckpoint
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 
 from text_classification.datamodule import DataModule
-from text_classification.datasets import SSTDataset, TextDataset
+from text_classification.datasets import SSTDatasetAlt, TextDataset
 from text_classification.encoders import CNNEncoder
 from text_classification.models import RNF
-from text_classification.tokenizers import SpacyTokenizer
+from text_classification.tokenizers import TokenizerSST
 from text_classification.vectors import GloVe
 from text_classification.vocab import Vocab
 
@@ -63,7 +63,7 @@ def objective(
         filter_width=trial.suggest_int("filter_width", 5, 8),
         embed_dropout=trial.suggest_float("embed_dropout", 0.2, 0.4, step=0.05),
         dropout=trial.suggest_float("dropout", 0.2, 0.4, step=0.05),
-        lr=trial.suggest_float("lr", 0.0001, 0.001, step=0.00005),
+        optimizer_args={"lr": trial.suggest_float("lr", 0.0001, 0.001, step=0.00005)}
     )
 
     # 7. Setup trainer
@@ -115,10 +115,8 @@ if __name__ == "__main__":
 
     # define filter function and target encoding
     if not args.fine_grained:
-        filter_func = lambda x: x.label != "neutral"
         target_encoding = {"negative": 0, "positive": 1}
     else:
-        filter_func = None
         target_encoding = {
             "very negative": 0,
             "negative": 1,
@@ -128,15 +126,14 @@ if __name__ == "__main__":
         }
 
     # get data
-    train_data, val_data, _ = SSTDataset(
-        filter_func=filter_func,
-        tokenizer=SpacyTokenizer(),
+    train_data, val_data, _ = SSTDatasetAlt(
+        tokenizer=TokenizerSST(),
         train_subtrees=args.train_subtrees,
         fine_grained=args.fine_grained,
     )
 
     # get vocab
-    vocab = Vocab(train_data, min_freq=args.min_freq)
+    vocab = Vocab([train_data, val_data], min_freq=args.min_freq)
 
     # get vectors
     vectors = GloVe(name="840B", dim=300)
