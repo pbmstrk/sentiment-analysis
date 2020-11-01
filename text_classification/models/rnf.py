@@ -149,11 +149,11 @@ class RNF(BaseClassifier):
 
         lstm_outputs = F.max_pool1d(
             lstm_outputs.permute(0, 2, 1), kernel_size=lstm_outputs.shape[1]
-        ).squeeze()
+        ).squeeze(-1)
         # lstm_outputs: [BATCH SIZE, LSTM_OUT]
 
         outputs = self.fc(lstm_outputs)
-        return outputs.squeeze()
+        return outputs
 
     def configure_optimizers(self):
         optimizer = getattr(torch.optim, self.optimizer_name)(

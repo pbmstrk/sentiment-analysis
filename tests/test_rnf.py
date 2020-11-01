@@ -23,6 +23,19 @@ class TestRNF(ModelTest):
         # run test
         self.check_output_shape(model, dataloader, torch.Size([32, 5]))
 
+    def test_single_batch(self):
+
+        # define data
+        data = FakeCNNDataset(10, 5)
+        dataloader = DataLoader(data, batch_size=1)
+
+        # define model
+        model_options = {"input_size": data.num_input, "num_class": data.num_output}
+        model = RNF(**model_options)
+
+        # run test
+        self.check_output_shape(model, dataloader, torch.Size([1, 5]))
+
     def test_forward_backward(self):
 
         # define data
