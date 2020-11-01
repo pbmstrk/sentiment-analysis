@@ -21,14 +21,17 @@ def SSTDatasetAlt(
 ) -> Tuple[TextDataset, TextDataset, TextDataset]:
 
     # adapted from https://github.com/pytorch/text/blob/master/torchtext/datasets/sst.py#L34-L36
-    prefix = "very " if fine_grained else ""
-    label_map = {
-        "0": prefix + "negative",
-        "1": "negative",
-        "2": "neutral",
-        "3": "positive",
-        "4": prefix + "positive",
-    }
+    if fine_grained:
+        prefix = "very "
+        label_map = {
+            "0": prefix + "negative",
+            "1": "negative",
+            "2": "neutral",
+            "3": "positive",
+            "4": prefix + "positive",
+        }
+    else:
+        label_map = {"0": "negative", "1": "positive"}
 
     # download and extract dataset
     url = DATASETS["sst-alt"]
