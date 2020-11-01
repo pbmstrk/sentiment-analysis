@@ -33,7 +33,7 @@ class TimeDistributedLSTM(pl.LightningModule):
                 x,
                 dim=self.time_axis,
                 index=torch.tensor([i], device=self.device).long(),
-            ).squeeze()
+            ).squeeze(1)
 
             _, (hidden_t, _) = self.lstm(x_input)
 
@@ -145,8 +145,7 @@ class RNF(BaseClassifier):
         # FILTER_WIDTH, EMBED_DIM]
 
         lstm_outputs = self.time_lstm(lstm_inputs)
-        # lstm_outputs: [BATCH SIZE, LONGEST SEQ - FILTER_WIDTH + 1,
-        # FILTER_WIDTH, LSTM_OUT]
+        # lstm_outputs: [BATCH SIZE, LONGEST SEQ - FILTER_WIDTH + 1, LSTM_OUT]
 
         lstm_outputs = F.max_pool1d(
             lstm_outputs.permute(0, 2, 1), kernel_size=lstm_outputs.shape[1]
