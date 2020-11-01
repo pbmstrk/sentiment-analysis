@@ -82,4 +82,4 @@ class TextCNN(BaseClassifier):
         conv_out = self.drop(torch.cat(pooled, dim=1))
         # conv_out: [BATCH_SIZE, N_FILTERS * CONV_OUT_DIM]
 
-        return self.fc(conv_out).squeeze()
+        return self.fc(conv_out)
