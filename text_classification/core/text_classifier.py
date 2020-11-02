@@ -1,22 +1,20 @@
+from inspect import Parameter, signature
+from typing import Dict, Optional
 
 import pytorch_lightning as pl
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from typing import Dict, Optional
-
-from inspect import signature, Parameter
 
 class TextClassifier(pl.LightningModule):
-
     def __init__(
         self,
         model: nn.Module,
         optimizer_name: str = "Adam",
         optimizer_args: Dict = {"lr": 0.001},
         scheduler_name: Optional[str] = None,
-        scheduler_args: Optional[Dict] = None
+        scheduler_args: Optional[Dict] = None,
     ):
         super().__init__()
 
@@ -39,7 +37,6 @@ class TextClassifier(pl.LightningModule):
             raise
         return func
 
-
     def check_optimizer_args(self):
         self.try_get_func(torch.optim, self.optimizer_name)
 
@@ -47,8 +44,10 @@ class TextClassifier(pl.LightningModule):
         func = self.try_get_func(torch.optim.lr_scheduler, self.scheduler_name)
 
         for name, p in signature(func).parameters.items():
-            if name != 'optimizer' and p.default == Parameter.empty:
-                assert name in self.scheduler_args.keys(), f"{self.scheduler_name} expects a value for {name}"
+            if name != "optimizer" and p.default == Parameter.empty:
+                assert (
+                    name in self.scheduler_args.keys()
+                ), f"{self.scheduler_name} expects a value for {name}"
 
     def forward(self, batch):
         return self.model(batch)

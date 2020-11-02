@@ -4,8 +4,8 @@ import pytorch_lightning as pl
 import torch
 from torch.utils.data import DataLoader
 
-from text_classification.models import RNF
 from text_classification import TextClassifier
+from text_classification.models import RNF
 
 from .base import FakeCNNDataset, ModelTest
 
@@ -113,9 +113,13 @@ class TestRNF(ModelTest):
 
         # check if embedding weight is correctly loaded and remains fixed
         assert torch.all(
-            torch.eq(clf_before.model.embedding.weight, clf_after.model.embedding.weight)
+            torch.eq(
+                clf_before.model.embedding.weight, clf_after.model.embedding.weight
+            )
         )
         trainer.fit(clf_after, dataloader)
         assert torch.all(
-            torch.eq(clf_before.model.embedding.weight, clf_after.model.embedding.weight)
+            torch.eq(
+                clf_before.model.embedding.weight, clf_after.model.embedding.weight
+            )
         )
