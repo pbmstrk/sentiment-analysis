@@ -9,7 +9,7 @@ from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 from text_classification.datamodule import DataModule
 from text_classification.datasets import SSTDatasetAlt
 from text_classification.encoders import CNNEncoder
-from text_classification.models import RNF
+from text_classification.models import TextCNN
 from text_classification.tokenizers import TokenizerSST
 from text_classification.vectors import GloVe
 from text_classification.vocab import Vocab
@@ -85,7 +85,7 @@ def main(cfg: DictConfig):
 
     # 6. Setup model
     num_class = 5 if cfg.dataset.fine_grained else 2
-    model = RNF(
+    model = TextCNN(
         input_size=len(vocab), num_class=num_class, embed_mat=embed_mat, **cfg.model
     )
 
