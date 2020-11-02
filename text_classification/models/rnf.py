@@ -1,15 +1,12 @@
-from typing import Dict, Optional
+from typing import Optional
 
 import numpy as np
-import pytorch_lightning as pl
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from text_classification.models.base import BaseClassifier
 
-
-class TimeDistributedLSTM(pl.LightningModule):
+class TimeDistributedLSTM(nn.Module):
     def __init__(self, input_dim: int, output_dim: int, time_axis: int, dropout: float):
         super().__init__()
 
@@ -26,13 +23,13 @@ class TimeDistributedLSTM(pl.LightningModule):
         batch_size = x.shape[0]
         time_steps = x.shape[self.time_axis]
         embed_dim = x.shape[-1]
-        outputs = torch.zeros(batch_size, time_steps, embed_dim, device=self.device)
+        outputs = torch.zeros(batch_size, time_steps, embed_dim, device=x.device)
 
         for i in range(time_steps):
             x_input = torch.index_select(
                 x,
                 dim=self.time_axis,
-                index=torch.tensor([i], device=self.device).long(),
+                index=torch.tensor([i], device=x.device).long(),
             ).squeeze(1)
 
             _, (hidden_t, _) = self.lstm(x_input)
@@ -54,7 +51,7 @@ def format_conv_input(x, filter_width, sent_len):
     return torch.cat(chunks, 1)
 
 
-class RNF(BaseClassifier):
+class RNF(nn.Module):
 
     r"""
     Convolutional Neural Networks with Recurrent Neural Filters
@@ -96,8 +93,6 @@ class RNF(BaseClassifier):
         dropout: float = 0.4,
         embed_mat: Optional[np.ndarray] = None,
         freeze_embed: bool = True,
-        optimizer_name: str = "Adam",
-        optimizer_args: Dict = {"lr": 0.001},
     ):
 
         super().__init__()
@@ -111,8 +106,6 @@ class RNF(BaseClassifier):
         self.dropout = dropout
         self.embed_mat = embed_mat
         self.freeze_embed = freeze_embed
-        self.optimizer_name = optimizer_name
-        self.optimizer_args = optimizer_args
 
         self.embedding = nn.Embedding(self.input_size, self.embed_dim, padding_idx=0)
         if self.embed_mat is not None:
@@ -154,9 +147,3 @@ class RNF(BaseClassifier):
 
         outputs = self.fc(lstm_outputs)
         return outputs
-
-    def configure_optimizers(self):
-        optimizer = getattr(torch.optim, self.optimizer_name)(
-            self.parameters(), **self.optimizer_args
-        )
-        return optimizer

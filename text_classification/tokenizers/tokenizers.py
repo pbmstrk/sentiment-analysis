@@ -36,4 +36,4 @@ class TokenizerSST(BaseTokenizer):
     def __call__(self, x: str) -> List[str]:
         x = re.sub(r"[^A-Za-z0-9(),!?\'\`]", " ", x)
         x = re.sub(r"\s{2,}", " ", x)
-        return x.strip().split(self.split)
+        return x.strip().lower().split(self.split)

@@ -1,14 +1,12 @@
-from typing import Dict, List, Optional
+from typing import List, Optional
 
 import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from text_classification.models.base import BaseClassifier
 
-
-class TextCNN(BaseClassifier):
+class TextCNN(nn.Module):
     def __init__(
         self,
         input_size: int,
@@ -19,9 +17,8 @@ class TextCNN(BaseClassifier):
         dropout: float = 0.5,
         embed_mat: Optional[np.ndarray] = None,
         freeze_embed: bool = True,
-        optimizer_name: str = "Adam",
-        optimizer_args: Dict = {"lr": 0.001},
     ):
+        super().__init__()
 
         self.input_size = input_size
         self.num_class = num_class
@@ -31,10 +28,6 @@ class TextCNN(BaseClassifier):
         self.dropout = dropout
         self.embed_mat = embed_mat
         self.freeze_embed = freeze_embed
-        self.optimizer_name = optimizer_name
-        self.optimizer_args = optimizer_args
-
-        super().__init__()
 
         self.embedding = nn.Embedding(self.input_size, self.embed_dim, padding_idx=0)
         if self.embed_mat is not None:
@@ -58,12 +51,6 @@ class TextCNN(BaseClassifier):
         self.fc = nn.Linear(len(self.kernel_sizes) * self.out_channels, self.num_class)
 
         self.drop = nn.Dropout()
-
-    def configure_optimizers(self):
-        optimizer = getattr(torch.optim, self.optimizer_name)(
-            self.parameters(), **self.optimizer_args
-        )
-        return optimizer
 
     def forward(self, batch):
 

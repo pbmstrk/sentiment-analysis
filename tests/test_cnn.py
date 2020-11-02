@@ -5,6 +5,7 @@ import torch
 from torch.utils.data import DataLoader
 
 from text_classification.models import TextCNN
+from text_classification import TextClassifier
 
 from .base import FakeCNNDataset, ModelTest
 
@@ -93,15 +94,15 @@ class TestRNF(ModelTest):
             "embed_mat": embed_mat,
         }
 
-        model_before = TextCNN(**model_options)
-        model_after = TextCNN(**model_options)
-        model_after.load_state_dict(model_before.state_dict())
+        clf_before = TextClassifier(TextCNN(**model_options))
+        clf_after = TextClassifier(TextCNN(**model_options))
+        clf_after.load_state_dict(clf_before.state_dict())
 
         # check if embedding weight is correctly loaded and remains fixed
         assert torch.all(
-            torch.eq(model_before.embedding.weight, model_after.embedding.weight)
+            torch.eq(clf_before.model.embedding.weight, clf_after.model.embedding.weight)
         )
-        trainer.fit(model_after, dataloader)
+        trainer.fit(clf_after, dataloader)
         assert torch.all(
-            torch.eq(model_before.embedding.weight, model_after.embedding.weight)
+            torch.eq(clf_before.model.embedding.weight, clf_after.model.embedding.weight)
         )
