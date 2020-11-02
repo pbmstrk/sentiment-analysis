@@ -6,6 +6,7 @@ from pytorch_lightning import Trainer, seed_everything
 from pytorch_lightning.callbacks import Callback, ModelCheckpoint
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 
+from text_classification import TextClassifier
 from text_classification.datamodule import DataModule
 from text_classification.datasets import SSTDatasetAlt
 from text_classification.encoders import CNNEncoder
@@ -88,6 +89,7 @@ def main(cfg: DictConfig):
     model = RNF(
         input_size=len(vocab), num_class=num_class, embed_mat=embed_mat, **cfg.model
     )
+    classifier = TextClassifier(model, **cfg.text_classifier)
 
     # 7. Setup trainer
     early_stop_callback = EarlyStopping(
@@ -113,7 +115,7 @@ def main(cfg: DictConfig):
     )
     log.info("Training...")
     # 8. Fit model
-    trainer.fit(model, dm.train_dataloader(), dm.val_dataloader())
+    trainer.fit(classifier, dm.train_dataloader(), dm.val_dataloader())
 
     # 9. Test model
     results = trainer.test(
