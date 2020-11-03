@@ -59,9 +59,7 @@ def main(cfg: DictConfig):
 
     log.info("Downloading data...")
     # 1. Get SST dataset
-    train, val, test = SSTDatasetAlt(
-        root=root, tokenizer=TokenizerSST(), **cfg.dataset
-    )
+    train, val, test = SSTDatasetAlt(root=root, tokenizer=TokenizerSST(), **cfg.dataset)
 
     log.info("Creating vocab...")
     # 2. Get vocab

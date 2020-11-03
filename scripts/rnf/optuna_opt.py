@@ -65,8 +65,10 @@ def objective(
         embed_dropout=trial.suggest_float("embed_dropout", 0.2, 0.4, step=0.05),
         dropout=trial.suggest_float("dropout", 0.2, 0.4, step=0.05),
     )
-    classifier = TextClassifier(model, optimizer_args={"lr": trial.suggest_float("lr", 0.0001, 0.001, step=0.00005)})
-    
+    classifier = TextClassifier(
+        model,
+        optimizer_args={"lr": trial.suggest_float("lr", 0.0001, 0.001, step=0.00005)},
+    )
 
     # 7. Setup trainer
     early_stop_callback = EarlyStopping(
