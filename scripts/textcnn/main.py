@@ -35,7 +35,7 @@ class LoggingCallback(Callback):
         )
 
 
-@hydra.main(config_name="config")
+@hydra.main(config_path="conf", config_name="config")
 def main(cfg: DictConfig):
 
     log.info("Arguments:\n %s", OmegaConf.to_yaml(cfg))
@@ -65,10 +65,13 @@ def main(cfg: DictConfig):
     # 2. Get vocab
     vocab = Vocab([train, val, test], **cfg.vocab)
 
-    log.info("Downloading pre-trained word vectors...")
-    # 3. Retrieve pre-trained embeddings
-    vectors = GloVe(root=root, name=cfg.vectors.name, dim=300)
-    embed_mat = vectors.get_matrix(vocab)
+    if cfg.vectors.name:
+        log.info("Downloading pre-trained word vectors...")
+        # 3. Retrieve pre-trained embeddings
+        vectors = GloVe(root=root, name=cfg.vectors.name, dim=300)
+        embed_mat = vectors.get_matrix(vocab)
+    else:
+        embed_mat = None
 
     # 4. Setup encoder to encode examples
     encoder = CNNEncoder(vocab=vocab, target_encoding=target_encoding)
