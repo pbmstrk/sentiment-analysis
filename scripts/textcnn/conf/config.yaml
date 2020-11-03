@@ -1,0 +1,31 @@
+dataset:
+  train_subtrees: true
+  fine_grained: false
+vocab:
+  min_freq: 1
+  max_size: null
+model:
+  embed_dim: 300
+  kernel_sizes: [3,4,5]
+  out_channels: 100
+  dropout: 0.5
+  embed_dropout: 0.5
+  freeze_embed: False
+datamodule:
+  batch_size: 64
+text_classifier:
+  optimizer_name: "Adam"
+  optimizer_args:
+    lr: 5e-4
+    weight_decay: 1e-5
+  scheduler_name: "StepLR"
+  scheduler_args:
+    step_size: 1
+    gamma: 0.99
+trainer:
+  gpus: 1
+  progress_bar_refresh_rate: 0
+  max_epochs: 25
+  deterministic: True
+vectors:
+  name: null

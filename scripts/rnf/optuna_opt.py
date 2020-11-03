@@ -8,6 +8,7 @@ from pytorch_lightning import LightningModule, Trainer, seed_everything
 from pytorch_lightning.callbacks import Callback, ModelCheckpoint
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 
+from text_classification import TextClassifier
 from text_classification.datamodule import DataModule
 from text_classification.datasets import SSTDatasetAlt, TextDataset
 from text_classification.encoders import CNNEncoder
@@ -47,7 +48,7 @@ def objective(
     seed_everything(42)
 
     # 5. Setup train, val and test dataloaders
-    ds = DataModule(
+    dm = DataModule(
         train=train,
         val=val,
         encoder=encoder,
@@ -63,7 +64,10 @@ def objective(
         filter_width=trial.suggest_int("filter_width", 5, 8),
         embed_dropout=trial.suggest_float("embed_dropout", 0.2, 0.4, step=0.05),
         dropout=trial.suggest_float("dropout", 0.2, 0.4, step=0.05),
-        optimizer_args={"lr": trial.suggest_float("lr", 0.0001, 0.001, step=0.00005)}
+    )
+    classifier = TextClassifier(
+        model,
+        optimizer_args={"lr": trial.suggest_float("lr", 0.0001, 0.001, step=0.00005)},
     )
 
     # 7. Setup trainer
@@ -93,11 +97,11 @@ def objective(
     )
 
     # 8. Fit model
-    trainer.fit(model, ds.train_dataloader(), ds.val_dataloader())
+    trainer.fit(classifier, dm.train_dataloader(), dm.val_dataloader())
 
     # 9. Test model
     results = trainer.test(
-        test_dataloaders=ds.val_dataloader(),
+        test_dataloaders=dm.val_dataloader(),
         ckpt_path=checkpoint_callback.best_model_path,
     )
 

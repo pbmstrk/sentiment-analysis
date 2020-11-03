@@ -1,5 +1,3 @@
-import pytest
-
 from text_classification.datasets import TextDataset
 from text_classification.datasets.base import Example
 from text_classification.vocab import Vocab

@@ -10,6 +10,7 @@ model:
     embed_dropout: 0.4
     dropout: 0.4
     freeze_embed: True
+text_classifier:
     optimizer_name: "Adam"
     optimizer_args:
       lr: 0.001

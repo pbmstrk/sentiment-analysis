@@ -1,14 +1,12 @@
-from typing import Dict, List, Optional
+from typing import List, Optional
 
 import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from text_classification.models.base import BaseClassifier
 
-
-class TextCNN(BaseClassifier):
+class TextCNN(nn.Module):
     def __init__(
         self,
         input_size: int,
@@ -17,11 +15,11 @@ class TextCNN(BaseClassifier):
         kernel_sizes: List[int] = [3, 4, 5],
         out_channels: int = 100,
         dropout: float = 0.5,
+        embed_dropout: float = 0.4,
         embed_mat: Optional[np.ndarray] = None,
         freeze_embed: bool = True,
-        optimizer_name: str = "Adam",
-        optimizer_args: Dict = {"lr": 0.001},
     ):
+        super().__init__()
 
         self.input_size = input_size
         self.num_class = num_class
@@ -29,12 +27,9 @@ class TextCNN(BaseClassifier):
         self.kernel_sizes = kernel_sizes
         self.out_channels = out_channels
         self.dropout = dropout
+        self.embed_dropout = embed_dropout
         self.embed_mat = embed_mat
         self.freeze_embed = freeze_embed
-        self.optimizer_name = optimizer_name
-        self.optimizer_args = optimizer_args
-
-        super().__init__()
 
         self.embedding = nn.Embedding(self.input_size, self.embed_dim, padding_idx=0)
         if self.embed_mat is not None:
@@ -57,20 +52,15 @@ class TextCNN(BaseClassifier):
 
         self.fc = nn.Linear(len(self.kernel_sizes) * self.out_channels, self.num_class)
 
-        self.drop = nn.Dropout()
-
-    def configure_optimizers(self):
-        optimizer = getattr(torch.optim, self.optimizer_name)(
-            self.parameters(), **self.optimizer_args
-        )
-        return optimizer
+        self.drop = nn.Dropout(self.dropout)
+        self.embed_drop = nn.Dropout(self.embed_dropout)
 
     def forward(self, batch):
 
         inputs, _ = batch
         # inputs:  [BATCH_SIZE, LONGEST_SEQ]
 
-        embeds = self.embedding(inputs).permute(0, 2, 1)
+        embeds = self.embed_drop(self.embedding(inputs).permute(0, 2, 1))
         # embeds = [BATCH_SIZE, EMBED_DIM, LONGEST_SEQ]
 
         convs = [F.relu(conv(embeds)) for conv in self.convs]

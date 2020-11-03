@@ -1,4 +1,4 @@
-from typing import Callable, Dict, List, NamedTuple, Optional, Union
+from typing import List, NamedTuple, Union
 
 from torch.utils.data import Dataset
 

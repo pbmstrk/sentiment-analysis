@@ -1,6 +1,9 @@
 import pytorch_lightning as pl
 import torch
+import torch.nn as nn
 from torch.utils.data import Dataset
+
+from text_classification import TextClassifier
 
 
 class FakeCNNDataset(Dataset):
@@ -22,13 +25,17 @@ class ModelTest:
 
         trainer = pl.Trainer(**trainer_options)
 
+        classifier = TextClassifier(
+            model, scheduler_name="StepLR", scheduler_args={"step_size": 1}
+        )
+
         # check if model actually trains
         # pytorch-lightning/blob/master/tests/base/develop_pipelines.py#L62-L69
         initial_values = torch.tensor(
             [torch.sum(torch.abs(x)) for x in model.parameters()]
         )
         result = trainer.fit(
-            model, train_dataloader=dataloader, val_dataloaders=dataloader
+            classifier, train_dataloader=dataloader, val_dataloaders=dataloader
         )
         post_train_values = torch.tensor(
             [torch.sum(torch.abs(x)) for x in model.parameters()]
@@ -38,7 +45,7 @@ class ModelTest:
 
         assert torch.norm(initial_values - post_train_values) > 0.1
 
-        test_result = trainer.test(model, dataloader)
+        test_result = trainer.test(classifier, dataloader)
 
         # test should return something
         assert test_result
@@ -47,3 +54,14 @@ class ModelTest:
 
         batch = next(iter(dataloader))
         assert model(batch).shape == expected
+
+
+class FakeModel(nn.Module):
+    def __init__(self, input_size, output_size):
+
+        super().__init__()
+
+        self.layer = nn.Linear(input_size, output_size)
+
+    def forward(self, x):
+        return x
