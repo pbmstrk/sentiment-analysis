@@ -9,18 +9,23 @@ model:
   kernel_sizes: [3,4,5]
   out_channels: 100
   dropout: 0.5
-  freeze_embed: True
+  embed_dropout: 0.5
+  freeze_embed: False
 datamodule:
   batch_size: 64
 text_classifier:
   optimizer_name: "Adam"
   optimizer_args:
-    lr: 0.001
+    lr: 5e-4
+    weight_decay: 1e-5
+  scheduler_name: "StepLR"
+  scheduler_args:
+    step_size: 1
+    gamma: 0.99
 trainer:
   gpus: 1
   progress_bar_refresh_rate: 0
-  max_epochs: 15
+  max_epochs: 25
   deterministic: True
 vectors:
-  name: "840B"
-
+  name: null
