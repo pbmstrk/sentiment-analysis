@@ -15,6 +15,7 @@ class TextCNN(nn.Module):
         kernel_sizes: List[int] = [3, 4, 5],
         out_channels: int = 100,
         dropout: float = 0.5,
+        embed_dropout: float = 0.4,
         embed_mat: Optional[np.ndarray] = None,
         freeze_embed: bool = True,
     ):
@@ -26,6 +27,7 @@ class TextCNN(nn.Module):
         self.kernel_sizes = kernel_sizes
         self.out_channels = out_channels
         self.dropout = dropout
+        self.embed_dropout = embed_dropout
         self.embed_mat = embed_mat
         self.freeze_embed = freeze_embed
 
@@ -50,14 +52,15 @@ class TextCNN(nn.Module):
 
         self.fc = nn.Linear(len(self.kernel_sizes) * self.out_channels, self.num_class)
 
-        self.drop = nn.Dropout()
+        self.drop = nn.Dropout(self.dropout)
+        self.embed_drop = nn.Dropout(self.embed_dropout)
 
     def forward(self, batch):
 
         inputs, _ = batch
         # inputs:  [BATCH_SIZE, LONGEST_SEQ]
 
-        embeds = self.embedding(inputs).permute(0, 2, 1)
+        embeds = self.embed_drop(self.embedding(inputs).permute(0, 2, 1))
         # embeds = [BATCH_SIZE, EMBED_DIM, LONGEST_SEQ]
 
         convs = [F.relu(conv(embeds)) for conv in self.convs]
