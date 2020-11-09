@@ -35,7 +35,7 @@ class LoggingCallback(Callback):
         )
 
 
-@hydra.main(config_name="config")
+@hydra.main(config_path="conf", config_name="config")
 def main(cfg: DictConfig):
 
     log.info("Arguments:\n %s", OmegaConf.to_yaml(cfg))
