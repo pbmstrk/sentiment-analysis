@@ -1,1 +1,1 @@
-from .encoders import CNNEncoder
+from .encoders import CNNEncoder, LSTMEncoder

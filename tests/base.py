@@ -6,17 +6,21 @@ from torch.utils.data import Dataset
 from text_classification import TextClassifier
 
 
-class FakeCNNDataset(Dataset):
-    def __init__(self, num_input, num_output):
+class FakeDataset(Dataset):
+    def __init__(self, num_input, num_output, return_seq_lengths=False):
         self.num_input = num_input
         self.num_output = num_output
         self.inputs = torch.randint(0, self.num_input, (100, 15))
         self.targets = torch.randint(0, self.num_output, (100,))
+        if return_seq_lengths:
+            self.seq_lengths = torch.randint(0, 15, (100,))
 
     def __len__(self):
         return len(self.targets)
 
     def __getitem__(self, idx):
+        if hasattr(self, "seq_lengths"):
+            return self.inputs[idx], self.targets[idx], self.seq_lengths[idx]
         return self.inputs[idx], self.targets[idx]
 
 

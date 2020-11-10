@@ -5,34 +5,34 @@ import torch
 from torch.utils.data import DataLoader
 
 from text_classification import TextClassifier
-from text_classification.models import RNF
+from text_classification.models import NSE
 
 from .base import FakeDataset, ModelTest
 
 
-class TestRNF(ModelTest):
+class TestNSE(ModelTest):
     def test_output_shape(self):
 
         # define data
-        data = FakeDataset(10, 5)
+        data = FakeDataset(10, 5, return_seq_lengths=True)
         dataloader = DataLoader(data, batch_size=32)
 
         # define model
         model_options = {"input_size": data.num_input, "num_class": data.num_output}
-        model = RNF(**model_options)
+        model = NSE(**model_options)
 
         # run test
         self.check_output_shape(model, dataloader, torch.Size([32, 5]))
 
-    def test_one_element(self):
+    def test_one_element_batch(self):
 
         # define data
-        data = FakeDataset(10, 5)
+        data = FakeDataset(10, 5, return_seq_lengths=True)
         dataloader = DataLoader(data, batch_size=1)
 
         # define model
         model_options = {"input_size": data.num_input, "num_class": data.num_output}
-        model = RNF(**model_options)
+        model = NSE(**model_options)
 
         # run test
         self.check_output_shape(model, dataloader, torch.Size([1, 5]))
@@ -40,7 +40,7 @@ class TestRNF(ModelTest):
     def test_forward_backward(self):
 
         # define data
-        data = FakeDataset(10, 5)
+        data = FakeDataset(10, 5, return_seq_lengths=True)
         dataloader = DataLoader(data, batch_size=32)
 
         # define trainer options
@@ -54,7 +54,7 @@ class TestRNF(ModelTest):
 
         # define model
         model_options = {"input_size": data.num_input, "num_class": data.num_output}
-        model = RNF(**model_options)
+        model = NSE(**model_options)
 
         # run test
         self.run_model_test(trainer_options, model, dataloader)
@@ -63,7 +63,7 @@ class TestRNF(ModelTest):
     def test_forward_backward_gpu(self):
 
         # define data
-        data = FakeDataset(10, 5)
+        data = FakeDataset(10, 5, return_seq_lengths=True)
         dataloader = DataLoader(data, batch_size=32)
 
         # define trainer options
@@ -78,14 +78,14 @@ class TestRNF(ModelTest):
 
         # define model
         model_options = {"input_size": data.num_input, "num_class": data.num_output}
-        model = RNF(**model_options)
+        model = NSE(**model_options)
 
         # run test
         self.run_model_test(trainer_options, model, dataloader)
 
     def test_weight_freeze(self):
 
-        data = FakeDataset(10, 5)
+        data = FakeDataset(10, 5, return_seq_lengths=True)
         dataloader = DataLoader(data, batch_size=32)
 
         trainer_options = {
@@ -107,8 +107,8 @@ class TestRNF(ModelTest):
             "embed_mat": embed_mat,
         }
 
-        clf_before = TextClassifier(RNF(**model_options))
-        clf_after = TextClassifier(RNF(**model_options))
+        clf_before = TextClassifier(NSE(**model_options))
+        clf_after = TextClassifier(NSE(**model_options))
         clf_after.load_state_dict(clf_before.state_dict())
 
         # check if embedding weight is correctly loaded and remains fixed

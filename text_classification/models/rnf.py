@@ -94,7 +94,6 @@ class RNF(nn.Module):
         embed_mat: Optional[np.ndarray] = None,
         freeze_embed: bool = True,
     ):
-
         super().__init__()
 
         self.input_size = input_size
