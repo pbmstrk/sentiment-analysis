@@ -7,14 +7,14 @@ from torch.utils.data import DataLoader
 from text_classification import TextClassifier
 from text_classification.models import TextCNN
 
-from .base import FakeCNNDataset, ModelTest
+from .base import FakeDataset, ModelTest
 
 
-class TestRNF(ModelTest):
+class TestCNN(ModelTest):
     def test_output_shape(self):
 
         # define data
-        data = FakeCNNDataset(10, 5)
+        data = FakeDataset(10, 5)
         dataloader = DataLoader(data, batch_size=32)
 
         # define model
@@ -27,7 +27,7 @@ class TestRNF(ModelTest):
     def test_forward_backward(self):
 
         # define data
-        data = FakeCNNDataset(10, 5)
+        data = FakeDataset(10, 5)
         dataloader = DataLoader(data, batch_size=32)
 
         # define trainer options
@@ -50,7 +50,7 @@ class TestRNF(ModelTest):
     def test_forward_backward_gpu(self):
 
         # define data
-        data = FakeCNNDataset(10, 5)
+        data = FakeDataset(10, 5)
         dataloader = DataLoader(data, batch_size=32)
 
         # define trainer options
@@ -72,7 +72,7 @@ class TestRNF(ModelTest):
 
     def test_weight_freeze(self):
 
-        data = FakeCNNDataset(10, 5)
+        data = FakeDataset(10, 5)
         dataloader = DataLoader(data, batch_size=32)
 
         trainer_options = {
