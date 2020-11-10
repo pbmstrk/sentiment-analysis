@@ -1,0 +1,26 @@
+dataset:
+    train_subtrees: true
+    fine_grained: false
+vocab:
+    min_freq: 1
+    max_size: null
+model:
+    n_units: 300
+    mlp_dim: 1024
+    dropout: 0.5
+    freeze_embed: True
+text_classifier:
+    optimizer_name: "Adam"
+    optimizer_args:
+      lr: 3e-4
+      weight_decay: 3e-5
+datamodule:
+    batch_size: 64
+trainer:
+    gpus: 1
+    progress_bar_refresh_rate: 0
+    max_epochs: 25
+    deterministic: True
+vectors:
+    name: "840B"
+
