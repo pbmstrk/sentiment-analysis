@@ -76,11 +76,9 @@ class TransformerEncoder(BaseEncoder):
         data = [item[0] for item in batch]
         targets = [item[1] for item in batch]
 
-        seqlengths = [len(el) for el in data]
-
         x = pad_sequence(data, batch_first=True)
 
-        return x.long(), torch.Tensor(targets).long(), seqlengths
+        return x.long(), torch.Tensor(targets).long()
 
     def _encode(self, example):
 
