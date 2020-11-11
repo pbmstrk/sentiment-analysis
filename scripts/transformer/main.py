@@ -62,9 +62,11 @@ def main(cfg: DictConfig):
 
     log.info("Creating vocab...")
     # 2. Get vocab
-    vocab = Vocab([train, val, test], 
-                special_tokens={"cls_token": "<cls>", "sep_token": "<sep>"}, 
-                **cfg.vocab)
+    vocab = Vocab(
+        [train, val, test],
+        special_tokens={"cls_token": "<cls>", "sep_token": "<sep>"},
+        **cfg.vocab
+    )
 
     # 4. Setup encoder to encode examples
     encoder = TransformerEncoder(vocab=vocab, target_encoding=target_encoding)
@@ -80,9 +82,7 @@ def main(cfg: DictConfig):
 
     # 6. Setup model
     num_class = 5 if cfg.dataset.fine_grained else 2
-    model = Transformer(
-        input_size=len(vocab), num_class=num_class, **cfg.model
-    )
+    model = Transformer(input_size=len(vocab), num_class=num_class, **cfg.model)
     classifier = TextClassifier(model, **cfg.text_classifier)
 
     # 7. Setup trainer

@@ -1,5 +1,5 @@
 from collections import Counter, OrderedDict
-from typing import List, Dict, Optional, Union
+from typing import Dict, List, Optional, Union
 
 from ..datasets.base import TextDataset
 
@@ -123,4 +123,3 @@ class Vocab:
                 break
 
         self.encoding.update({tok: i for i, tok in enumerate(self.wordlist)})
-

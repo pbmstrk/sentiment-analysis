@@ -36,7 +36,6 @@ class CNNEncoder(BaseEncoder):
 
 
 class LSTMEncoder(BaseEncoder):
-
     def __init__(self, vocab, target_encoding):
         self.vocab = vocab
         self.target_encoding = target_encoding
@@ -61,8 +60,8 @@ class LSTMEncoder(BaseEncoder):
 
         return text, label
 
-class TransformerEncoder(BaseEncoder):
 
+class TransformerEncoder(BaseEncoder):
     def __init__(self, vocab, target_encoding):
         self.vocab = vocab
         self.target_encoding = target_encoding
@@ -82,8 +81,11 @@ class TransformerEncoder(BaseEncoder):
 
     def _encode(self, example):
 
-        text = torch.tensor([self.vocab.cls_token] + [self.vocab[word] for word in example[0]] + [self.vocab.sep_token])
+        text = torch.tensor(
+            [self.vocab.cls_token]
+            + [self.vocab[word] for word in example[0]]
+            + [self.vocab.sep_token]
+        )
         label = torch.tensor(self.target_encoding[example[1]])
 
         return text, label
-

@@ -15,7 +15,7 @@ class NSE(nn.Module):
         mlp_dim: int = 1024,
         embed_mat: Optional[np.ndarray] = None,
         dropout: float = 0.4,
-        freeze_embed: bool = True
+        freeze_embed: bool = True,
     ):
         super().__init__()
 
