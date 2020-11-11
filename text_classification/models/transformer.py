@@ -20,9 +20,7 @@ class PositionwiseFeedforwardLayer(nn.Module):
 
     def forward(self, x):
 
-        x = self.dropout(F.relu(self.fc_1(x)))
-        x = self.fc_2(x)
-
+        x = self.fc_2(F.relu(self.fc_1(x)))
         return x
 
 
