@@ -39,3 +39,18 @@ class TestVocab:
         vocab = Vocab([dataset1, dataset2])
 
         assert len(vocab) == 8 + vocab.num_all_special_tokens
+
+    def test_special_tokens(self):
+
+        dataset = TextDataset(
+            [
+                Example(text=["Test", "the", "vocab", "class"], label=None),
+                Example(text=["another", "example"], label=None),
+            ]
+        )
+
+        special_tokens = {"sos_token": "<sos>", "eos_token": "<eos>"}
+
+        vocab = Vocab(dataset, special_tokens=special_tokens)
+
+        assert hasattr(vocab, "sos_token") and hasattr(vocab, "eos_token")

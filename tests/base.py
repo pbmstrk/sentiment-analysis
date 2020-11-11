@@ -36,13 +36,13 @@ class ModelTest:
         # check if model actually trains
         # pytorch-lightning/blob/master/tests/base/develop_pipelines.py#L62-L69
         initial_values = torch.tensor(
-            [torch.sum(torch.abs(x)) for x in model.parameters()]
+            [torch.sum(torch.abs(x)) for x in classifier.model.parameters()]
         )
         result = trainer.fit(
             classifier, train_dataloader=dataloader, val_dataloaders=dataloader
         )
         post_train_values = torch.tensor(
-            [torch.sum(torch.abs(x)) for x in model.parameters()]
+            [torch.sum(torch.abs(x)) for x in classifier.model.parameters()]
         )
 
         assert result == 1
