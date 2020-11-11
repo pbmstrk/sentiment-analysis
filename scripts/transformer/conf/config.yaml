@@ -1,0 +1,26 @@
+dataset:
+    train_subtrees: true
+    fine_grained: false
+vocab:
+    min_freq: 1
+    max_size: null
+model:
+    hid_dim: 512 
+    n_layers: 6 
+    n_heads: 8
+    pf_dim: 1024
+    dropout: 0.1
+    mlp_dim: 256 
+    max_length: 284
+text_classifier:
+    optimizer_name: "Adam"
+    optimizer_args:
+      lr: 0.001
+datamodule:
+    batch_size: 64
+trainer:
+    gpus: 1
+    progress_bar_refresh_rate: 0
+    max_epochs: 15
+    deterministic: True
+

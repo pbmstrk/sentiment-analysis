@@ -18,15 +18,9 @@ class PositionwiseFeedforwardLayer(nn.Module):
         
     def forward(self, x):
         
-        #x = [batch size, seq len, hid dim]
-        
-        x = self.dropout(torch.relu(self.fc_1(x)))
-        
-        #x = [batch size, seq len, pf dim]
-        
+        x = self.dropout(F.relu(self.fc_1(x)))
         x = self.fc_2(x)
         
-        #x = [batch size, seq len, hid dim]
         
         return x
 
@@ -163,21 +157,14 @@ class Transformer(nn.Module):
         )
 
     def make_src_mask(self, src):
-        
-        #src = [batch size, src len]
-        
+                
         src_mask = (src != 0).unsqueeze(1).unsqueeze(2)
-
-        #src_mask = [batch size, 1, 1, src len]
 
         return src_mask
     
         
     def forward(self, batch):
-        
-        #src = [batch size, src len]
-        #src_mask = [batch size, src len]
-
+  
         src, _ = batch
 
         src_mask = self.make_src_mask(src)
@@ -185,16 +172,13 @@ class Transformer(nn.Module):
         batch_size, src_len = src.shape
         
         pos = torch.arange(0, src_len, device=src.device).unsqueeze(0).repeat(batch_size, 1)
-        
-        #pos = [batch size, src len]
+
         
         src = self.dropout((self.tok_embedding(src) * self.scale) + self.pos_embedding(pos))
         
-        #src = [batch size, src len, hid dim]
         
         for layer in self.layers:
             src = layer(src, src_mask)
             
-        #src = [batch size, src len, hid dim]
         out = self.fc(src[:, 0, :])
         return out
