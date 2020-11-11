@@ -1,5 +1,5 @@
 from collections import Counter, OrderedDict
-from typing import List, Optional, Union
+from typing import List, Dict, Optional, Union
 
 from ..datasets.base import TextDataset
 
@@ -35,30 +35,31 @@ class Vocab:
         max_size: Optional[int] = None,
         pad_token: Optional[str] = "<pad>",
         unk_token: Optional[str] = "<unk>",
-        special_tokens: Optional[List[str]] = None,
+        special_tokens: Optional[Dict[str, str]] = None,
     ):
 
         self.vocab_count = self.process_dataset(data)
         self.min_freq = min_freq
         self.max_size = max_size
-        self.pad_token = pad_token
-        self.unk_token = unk_token
-        self.special_tokens = special_tokens
-
         self.wordlist = []
         self.num_all_special_tokens = 0
 
-        if self.pad_token:
+        if pad_token:
+            self.pad_token = pad_token
             self.wordlist.append(self.pad_token)
             self.pad_token_index = self.wordlist.index(self.pad_token)
             self.num_all_special_tokens += 1
-        if self.unk_token:
+        if unk_token:
+            self.unk_token = unk_token
             self.wordlist.append(self.unk_token)
             self.unk_token_index = self.wordlist.index(self.unk_token)
             self.num_all_special_tokens += 1
 
-        if self.special_tokens:
-            self.wordlist.extend(self.special_tokens)
+        if special_tokens:
+            self.special_tokens = special_tokens
+            for key, value in self.special_tokens.items():
+                self.wordlist.append(value)
+                setattr(self, key, self.wordlist.index(value))
             self.num_all_special_tokens += len(self.special_tokens)
 
         self.encoding = OrderedDict()
@@ -122,3 +123,4 @@ class Vocab:
                 break
 
         self.encoding.update({tok: i for i, tok in enumerate(self.wordlist)})
+
