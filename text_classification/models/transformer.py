@@ -73,27 +73,21 @@ class MultiHeadAttentionLayer(nn.Module):
 
     def forward(self, query, key, value, mask=None):
 
-        batch_size = query.shape[0]
+        b_sz = query.shape[0]
 
         q = torch.einsum("...ij,jk->...ik", [query, self.q_proj_weight])  # QW_i^Q
         k = torch.einsum("...ij,jk->...ik", [key, self.k_proj_weight])  # KW_i^K
         v = torch.einsum("...ij,jk->...ik", [value, self.v_proj_weight])  # VW_i^V
 
-        q_split = q.view(batch_size, -1, self.num_heads, self.head_dim).permute(
-            0, 2, 1, 3
-        )
-        k_split = k.view(batch_size, -1, self.num_heads, self.head_dim).permute(
-            0, 2, 1, 3
-        )
-        v_split = v.view(batch_size, -1, self.num_heads, self.head_dim).permute(
-            0, 2, 1, 3
-        )
+        q = q.view(b_sz, -1, self.num_heads, self.head_dim).transpose(1, 2)
+        k = k.view(b_sz, -1, self.num_heads, self.head_dim).transpose(1, 2)
+        v = v.view(b_sz, -1, self.num_heads, self.head_dim).transpose(1, 2)
 
-        output, attention = self.attention(q_split, k_split, v_split, mask)
+        output, attention = self.attention(q, k, v, mask)
 
-        x = output.permute(0, 2, 1, 3).contiguous()
+        x = output.transpose(1, 2).contiguous()
 
-        x = x.view(batch_size, -1, self.hid_dim)
+        x = x.view(b_sz, -1, self.hid_dim)
 
         x = torch.einsum("...ij,jk->...ik", [x, self.out_proj])
 
@@ -171,24 +165,17 @@ class Transformer(nn.Module):
 
     def forward(self, batch):
 
-        src, _ = batch
+        x, _ = batch
+        _, x_len = x.shape
+        pos = torch.arange(x_len, device=x.device)
+        x_mask = self.make_src_mask(x)
 
-        src_mask = self.make_src_mask(src)
-
-        batch_size, src_len = src.shape
-
-        pos = (
-            torch.arange(0, src_len, device=src.device)
-            .unsqueeze(0)
-            .repeat(batch_size, 1)
-        )
-
-        src = self.dropout(
-            (self.tok_embedding(src) * self.scale) + self.pos_embedding(pos)
-        )
+        x = self.tok_embedding(x) * self.scale
+        x = x + self.pos_embedding(pos).expand_as(x)
+        x = self.dropout(x)
 
         for layer in self.layers:
-            src = layer(src, src_mask)
+            x = layer(x, x_mask)
 
-        out = self.fc(src[:, 0, :])
-        return out
+        x = self.fc(x[:, 0, :])
+        return x

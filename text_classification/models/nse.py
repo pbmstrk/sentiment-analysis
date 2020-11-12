@@ -61,7 +61,9 @@ class NSE(nn.Module):
         o_t = o_t.squeeze(1)
         # o_t: [BATCH_SIZE, N_UNITS]
 
-        z_t = F.softmax(torch.einsum("...i,...ik->...k", o_t, M_t), dim=1)  # equation (2)
+        z_t = F.softmax(
+            torch.einsum("...i,...ik->...k", o_t, M_t), dim=1
+        )  # equation (2)
         # z_t: [BATCH_SIZE, SEQ_LEN]
 
         m_rt = torch.einsum("...i,...ki->...k", z_t, M_t)  # equation (3)
