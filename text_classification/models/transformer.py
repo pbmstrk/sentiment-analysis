@@ -122,8 +122,53 @@ class EncoderLayer(nn.Module):
 
         return src
 
+class Encoder(nn.Module):
+    def __init__(
+        self,
+        input_size, 
+        hid_dim,
+        n_layers,
+        n_heads,
+        pf_dim,
+        dropout,
+        padding_idx = 0,
+        max_length = 284
+    ):
+        super().__init__()
 
-class Transformer(nn.Module):
+        self.tok_embedding = nn.Embedding(input_size, hid_dim, padding_idx=padding_idx)
+        self.pos_embedding = nn.Embedding(max_length, hid_dim)
+
+        self.layers = nn.ModuleList(
+            [EncoderLayer(hid_dim, n_heads, pf_dim, dropout) for _ in range(n_layers)]
+        )
+
+        self.dropout = nn.Dropout(dropout)
+
+        self.register_buffer("scale", torch.sqrt(torch.FloatTensor([hid_dim])))
+
+    def make_mask(self, x):
+
+        x_mask = (x != 0).unsqueeze(1).unsqueeze(2)
+
+        return x_mask
+
+    def forward(self, x):
+        
+        pos = torch.arange(x.shape[1], device=x.device)
+        x_mask = self.make_mask(x)
+
+        x = self.tok_embedding(x) * self.scale
+        x = x + self.pos_embedding(pos).expand_as(x)
+        x = self.dropout(x)
+
+        for layer in self.layers:
+            x = layer(x, x_mask)
+
+        pooled_output = x.transpose(0,1)[0]
+        return x, pooled_output
+
+class TransformerWithClassifierHead(nn.Module):
     def __init__(
         self,
         input_size: int,
@@ -139,43 +184,21 @@ class Transformer(nn.Module):
     ):
         super().__init__()
 
-        self.tok_embedding = nn.Embedding(input_size, hid_dim, padding_idx=padding_idx)
-        self.pos_embedding = nn.Embedding(max_length, hid_dim)
+        self.encoder = Encoder(input_size, hid_dim, n_layers, n_heads, pf_dim, dropout,
+                                padding_idx, max_length)
 
-        self.layers = nn.ModuleList(
-            [EncoderLayer(hid_dim, n_heads, pf_dim, dropout) for _ in range(n_layers)]
-        )
-
-        self.dropout = nn.Dropout(dropout)
-
-        self.register_buffer("scale", torch.sqrt(torch.FloatTensor([hid_dim])))
-
-        self.fc = nn.Sequential(
+        self.clf_head = nn.Sequential(
             nn.Linear(hid_dim, mlp_dim),
             nn.ReLU(),
-            self.dropout,
+            nn.Dropout(dropout),
             nn.Linear(mlp_dim, num_class),
         )
-
-    def make_src_mask(self, src):
-
-        src_mask = (src != 0).unsqueeze(1).unsqueeze(2)
-
-        return src_mask
 
     def forward(self, batch):
 
         x, _ = batch
-        _, x_len = x.shape
-        pos = torch.arange(x_len, device=x.device)
-        x_mask = self.make_src_mask(x)
+        
+        outputs = self.encoder(x)
 
-        x = self.tok_embedding(x) * self.scale
-        x = x + self.pos_embedding(pos).expand_as(x)
-        x = self.dropout(x)
-
-        for layer in self.layers:
-            x = layer(x, x_mask)
-
-        x = self.fc(x[:, 0, :])
+        x = self.clf_head(outputs[1])
         return x
