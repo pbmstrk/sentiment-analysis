@@ -1,10 +1,8 @@
 from typing import List, Optional
 
-import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torch import Tensor
 from torch.nn.init import xavier_uniform_
 from torch.nn.parameter import Parameter
 
@@ -198,7 +196,7 @@ class TransformerWithClassifierHead(nn.Module):
 
         x, _ = batch
         
-        outputs = self.encoder(x)
+        _, cls_output = self.encoder(x)
 
-        x = self.clf_head(outputs[1])
+        x = self.clf_head(cls_output)
         return x
