@@ -19,33 +19,25 @@ class NSE(nn.Module):
     ):
         super().__init__()
 
-        self.input_size = input_size
-        self.num_class = num_class
         self.n_units = n_units
-        self.mlp_dim = mlp_dim
-        self.embed_mat = embed_mat
-        self.dropout = dropout
-        self.freeze_embed = freeze_embed
 
-        self.embedding = nn.Embedding(self.input_size, self.n_units, padding_idx=0)
-        if self.embed_mat is not None:
+        self.embedding = nn.Embedding(input_size, n_units, padding_idx=0)
+        if embed_mat is not None:
             self.embedding = self.embedding.from_pretrained(
-                torch.from_numpy(self.embed_mat).float()
+                torch.from_numpy(embed_mat).float()
             )
-        if self.freeze_embed:
+        if freeze_embed:
             self.embedding.weight.requires_grad = False
 
-        self.read_lstm = nn.LSTM(self.n_units, self.n_units, batch_first=True)
-        self.write_lstm = nn.LSTM(2 * self.n_units, self.n_units, batch_first=True)
-        self.compose_layer = nn.Linear(2 * self.n_units, 2 * self.n_units)
-
-        self.drop = nn.Dropout(self.dropout)
+        self.read_lstm = nn.LSTM(n_units, n_units, batch_first=True)
+        self.write_lstm = nn.LSTM(2 * n_units, n_units, batch_first=True)
+        self.compose_layer = nn.Linear(2 * n_units, 2 * n_units)
 
         self.fc = nn.Sequential(
-            nn.Linear(self.n_units, self.mlp_dim),
+            nn.Linear(n_units, mlp_dim),
             nn.ReLU(),
-            self.drop,
-            nn.Linear(self.mlp_dim, self.num_class),
+            nn.Dropout(dropout),
+            nn.Linear(mlp_dim, num_class),
         )
 
     def _init_hidden(self, batch_size, hidden_dim, device):
@@ -69,10 +61,10 @@ class NSE(nn.Module):
         o_t = o_t.squeeze(1)
         # o_t: [BATCH_SIZE, N_UNITS]
 
-        z_t = F.softmax(torch.einsum("bo,bot->bt", o_t, M_t), dim=1)  # equation (2)
+        z_t = F.softmax(torch.einsum("...i,...ik->...k", o_t, M_t), dim=1)  # equation (2)
         # z_t: [BATCH_SIZE, SEQ_LEN]
 
-        m_rt = torch.einsum("bt,bot->bo", z_t, M_t)  # equation (3)
+        m_rt = torch.einsum("...i,...ki->...k", z_t, M_t)  # equation (3)
         # m_rt: [BATCH_SIZE, N_UNITS]
 
         return o_t, m_rt, z_t, hidden
@@ -90,12 +82,12 @@ class NSE(nn.Module):
         # h_t: [BATCH_SIZE, 1, N_UNITS]
 
         z_t_e_kT = torch.einsum(
-            "ki,kj->kji", [z_t, torch.ones(batch_size, n_units, device=device)]
+            "...i,...j->...ji", [z_t, torch.ones(batch_size, n_units, device=device)]
         )
         # z_t_e_kT: [BATCH_SIZE, N_UNITS, SEQ_LEN]
 
         h_t_e_l = torch.einsum(
-            "ki,kj->kij",
+            "...i,...j->...ij",
             [h_t.squeeze(1), torch.ones(batch_size, seq_len, device=device)],
         )
         # h_t_e_l: [BATCH_SIZE, N_UNITS, SEQ_LEN]

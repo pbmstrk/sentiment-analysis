@@ -96,31 +96,23 @@ class RNF(nn.Module):
     ):
         super().__init__()
 
-        self.input_size = input_size
-        self.num_classes = num_class
         self.filter_width = filter_width
-        self.embed_dim = embed_dim
-        self.hidden_dim = hidden_dim
-        self.embed_dropout = embed_dropout
-        self.dropout = dropout
-        self.embed_mat = embed_mat
-        self.freeze_embed = freeze_embed
 
-        self.embedding = nn.Embedding(self.input_size, self.embed_dim, padding_idx=0)
-        if self.embed_mat is not None:
+        self.embedding = nn.Embedding(input_size, embed_dim, padding_idx=0)
+        if embed_mat is not None:
             self.embedding = self.embedding.from_pretrained(
-                torch.from_numpy(self.embed_mat).float()
+                torch.from_numpy(embed_mat).float()
             )
-        if self.freeze_embed:
+        if freeze_embed:
             self.embedding.weight.requires_grad = False
 
         self.time_lstm = TimeDistributedLSTM(
-            self.embed_dim, self.hidden_dim, time_axis=1, dropout=self.dropout
+            embed_dim, hidden_dim, time_axis=1, dropout=dropout
         )
 
-        self.fc = nn.Linear(self.hidden_dim, self.num_classes)
+        self.fc = nn.Linear(hidden_dim, num_class)
 
-        self.embed_drop = nn.Dropout(p=self.embed_dropout)
+        self.embed_drop = nn.Dropout(p=embed_dropout)
 
     def forward(self, batch):
 
