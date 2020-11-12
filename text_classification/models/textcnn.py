@@ -50,7 +50,7 @@ class TextCNN(nn.Module):
         inputs, _ = batch
         # inputs:  [BATCH_SIZE, LONGEST_SEQ]
 
-        embeds = self.embed_drop(self.embedding(inputs).permute(0, 2, 1))
+        embeds = self.embed_drop(self.embedding(inputs).transpose(1,2))
         # embeds = [BATCH_SIZE, EMBED_DIM, LONGEST_SEQ]
 
         convs = [F.relu(conv(embeds)) for conv in self.convs]

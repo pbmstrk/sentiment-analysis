@@ -132,7 +132,7 @@ class RNF(nn.Module):
         # lstm_outputs: [BATCH SIZE, LONGEST SEQ - FILTER_WIDTH + 1, LSTM_OUT]
 
         lstm_outputs = F.max_pool1d(
-            lstm_outputs.permute(0, 2, 1), kernel_size=lstm_outputs.shape[1]
+            lstm_outputs.transpose(1, 2), kernel_size=lstm_outputs.shape[1]
         ).squeeze(-1)
         # lstm_outputs: [BATCH SIZE, LSTM_OUT]
 
