@@ -11,7 +11,7 @@ from text_classification import TextClassifier
 from text_classification.datamodule import DataModule
 from text_classification.datasets import SSTDatasetAlt
 from text_classification.encoders import TransformerEncoder
-from text_classification.models import Transformer
+from text_classification.models import TransformerWithClassifierHead
 from text_classification.tokenizers import TokenizerSST
 from text_classification.vocab import Vocab
 
@@ -94,7 +94,7 @@ def main(cfg: DictConfig):
 
     # 6. Setup model
     num_class = 5 if cfg.dataset.fine_grained else 2
-    model = Transformer(input_size=len(vocab), num_class=num_class, **cfg.model)
+    model = TransformerWithClassifierHead(input_size=len(vocab), num_class=num_class, **cfg.model)
     classifier = TextClassifier(model, **cfg.text_classifier)
 
     # 7. Setup trainer
