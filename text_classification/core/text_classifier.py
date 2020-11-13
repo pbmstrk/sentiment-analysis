@@ -1,5 +1,4 @@
-from inspect import Parameter, signature
-from typing import Dict, Optional
+from typing import Callable, Optional
 
 import pytorch_lightning as pl
 import torch
@@ -11,43 +10,16 @@ class TextClassifier(pl.LightningModule):
     def __init__(
         self,
         model: nn.Module,
-        optimizer_name: str = "Adam",
-        optimizer_args: Dict = {"lr": 0.001},
-        scheduler_name: Optional[str] = None,
-        scheduler_args: Optional[Dict] = None,
+        optimizer: Optional[Callable] = None,
+        scheduler: Optional[Callable] = None
     ):
         super().__init__()
 
         self.model = model
-        self.optimizer_name = optimizer_name
-        self.optimizer_args = optimizer_args
-        self.check_optimizer_args()
-
-        if scheduler_name:
-            self.scheduler_name = scheduler_name
-            self.scheduler_args = scheduler_args
-            self.check_scheduler_args()
-
-    @staticmethod
-    def try_get_func(module, name):
-        try:
-            func = getattr(module, name)
-        except AttributeError:
-            print(f"{name} is not a valid name in the {module} module.")
-            raise
-        return func
-
-    def check_optimizer_args(self):
-        self.try_get_func(torch.optim, self.optimizer_name)
-
-    def check_scheduler_args(self):
-        func = self.try_get_func(torch.optim.lr_scheduler, self.scheduler_name)
-
-        for name, p in signature(func).parameters.items():
-            if name != "optimizer" and p.default == Parameter.empty:
-                assert (
-                    name in self.scheduler_args.keys()
-                ), f"{self.scheduler_name} expects a value for {name}"
+        if optimizer is not None:
+            self.opt = optimizer
+        if scheduler is not None:
+            self.schedule = scheduler
 
     def forward(self, batch):
         return self.model(batch)
@@ -102,14 +74,16 @@ class TextClassifier(pl.LightningModule):
         self.epoch_end(outputs, prefix="test")
 
     def configure_optimizers(self):
-        optimizer = getattr(torch.optim, self.optimizer_name)(
-            self.parameters(), **self.optimizer_args
-        )
 
-        if hasattr(self, "scheduler_name"):
-            scheduler = getattr(torch.optim.lr_scheduler, self.scheduler_name)(
-                optimizer, **self.scheduler_args
-            )
-            return [optimizer], [scheduler]
+        if not hasattr(self, "opt"):
+            # check if model has optimizer defined
+            try:
+                return self.model.get_optimizer()
+            except AttributeError:
+                print("No optimizer is passed, and model not have an get_optimizer() method")
+                raise
+    
+        if hasattr(self, "schedule"):
+            return [self.opt], [self.schedule]
 
-        return optimizer
+        return self.opt

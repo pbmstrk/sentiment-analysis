@@ -14,6 +14,7 @@ from text_classification.models import TextCNN
 from text_classification.tokenizers import TokenizerSST
 from text_classification.vectors import GloVe
 from text_classification.vocab import Vocab
+from text_classification.utils import get_optimizer, get_scheduler
 
 log = logging.getLogger(__name__)
 
@@ -65,14 +66,13 @@ def main(cfg: DictConfig):
     # 2. Get vocab
     vocab = Vocab([train, val, test], **cfg.vocab)
 
+    # 3. Optionally retrieve pre-trained embeddings
+    embed_mat = None
     if cfg.vectors.name:
         log.info("Downloading pre-trained word vectors...")
-        # 3. Retrieve pre-trained embeddings
         vectors = GloVe(root=root, name=cfg.vectors.name, dim=300)
         embed_mat = vectors.get_matrix(vocab)
-    else:
-        embed_mat = None
-
+        
     # 4. Setup encoder to encode examples
     encoder = CNNEncoder(vocab=vocab, target_encoding=target_encoding)
 
@@ -85,12 +85,17 @@ def main(cfg: DictConfig):
         batch_size=cfg.datamodule.batch_size,
     )
 
-    # 6. Setup model
+    # 6. Setup model, optimizer and scheduler
     num_class = 5 if cfg.dataset.fine_grained else 2
     model = TextCNN(
         input_size=len(vocab), num_class=num_class, embed_mat=embed_mat, **cfg.model
     )
-    classifier = TextClassifier(model, **cfg.text_classifier)
+    optimizer = get_optimizer(model, **OmegaConf.to_container(cfg.optimizer))
+    scheduler = None
+    if hasattr(cfg, "scheduler"):
+        scheduler = get_scheduler(optimizer, **cfg.scheduler)
+
+    classifier = TextClassifier(model, optimizer=optimizer, scheduler=scheduler)
 
     # 7. Setup trainer
     early_stop_callback = EarlyStopping(

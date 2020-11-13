@@ -9,9 +9,9 @@ model:
     mlp_dim: 1024
     dropout: 0.5
     freeze_embed: True
-text_classifier:
-    optimizer_name: "Adam"
-    optimizer_args:
+optimizer:
+    name: "Adam"
+    args:
       lr: 3e-4
       weight_decay: 3e-5
 datamodule:

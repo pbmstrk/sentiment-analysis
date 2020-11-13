@@ -13,13 +13,14 @@ model:
   freeze_embed: False
 datamodule:
   batch_size: 64
-text_classifier:
-  optimizer_name: "Adam"
-  optimizer_args:
+optimizer:
+  name: "Adam"
+  args:
     lr: 5e-4
     weight_decay: 1e-5
-  scheduler_name: "StepLR"
-  scheduler_args:
+scheduler:
+  name: "StepLR"
+  args:
     step_size: 1
     gamma: 0.99
 trainer:

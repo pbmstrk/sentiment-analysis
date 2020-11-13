@@ -1,10 +1,7 @@
-import numpy as np
 import pytest
-import pytorch_lightning as pl
 import torch
 from torch.utils.data import DataLoader
 
-from text_classification import TextClassifier
 from text_classification.models import TransformerWithClassifierHead
 
 from .base import FakeDataset, ModelTest
