@@ -99,7 +99,7 @@ def main(cfg: DictConfig):
     # 6. Setup model
     num_class = 5 if cfg.dataset.fine_grained else 2
     model = TransformerWithClassifierHead(input_size=len(vocab), num_class=num_class, **cfg.model)
-    classifier = TextClassifier(model, **cfg.text_classifier, scheduler=scheduler, 
+    classifier = TextClassifier(model, **cfg.text_classifier, scheduler_name=scheduler, 
                     scheduler_args=scheduler_args)
 
     # 7. Setup trainer
