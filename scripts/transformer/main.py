@@ -92,14 +92,13 @@ def main(cfg: DictConfig):
         batch_size=cfg.datamodule.batch_size,
     )
 
-    scheduler = torch.optim.lr_scheduler.LambdaLR
     scheduler_args = {"lr_lambda": linear_schedule_with_warmup(num_warmup_steps=1000,
                     num_training_steps=10000)}
 
     # 6. Setup model
     num_class = 5 if cfg.dataset.fine_grained else 2
     model = TransformerWithClassifierHead(input_size=len(vocab), num_class=num_class, **cfg.model)
-    classifier = TextClassifier(model, **cfg.text_classifier, scheduler_name=scheduler, 
+    classifier = TextClassifier(model, **cfg.text_classifier, scheduler_name="LambdaLR", 
                     scheduler_args=scheduler_args)
 
     # 7. Setup trainer
