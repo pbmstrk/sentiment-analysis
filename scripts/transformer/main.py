@@ -5,6 +5,7 @@ from omegaconf import DictConfig, OmegaConf
 from pytorch_lightning import Trainer, seed_everything
 from pytorch_lightning.callbacks import Callback, ModelCheckpoint
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
+import torch
 
 from text_classification import TextClassifier
 from text_classification.datamodule import DataModule
@@ -33,6 +34,17 @@ class LoggingCallback(Callback):
             metrics["val_epoch_loss"],
         )
 
+# adapted from huggingface
+def linear_schedule_with_warmup(num_warmup_steps, num_training_steps):
+
+    def lr_lambda(current_step: int):
+        if current_step < num_warmup_steps:
+            return float(current_step) / float(max(1, num_warmup_steps))
+        return max(
+            0.0, float(num_training_steps - current_step) / float(max(1, num_training_steps - num_warmup_steps))
+        )
+
+    return lr_lambda
 
 @hydra.main(config_path="conf", config_name="config")
 def main(cfg: DictConfig):
@@ -102,10 +114,14 @@ def main(cfg: DictConfig):
         mode="min",
     )
 
+    scheduler = torch.optim.lr_scheduler.LambdaLR
+    scheduler_args = {"lr_lambda": linear_schedule_with_warmup(num_warmup_steps=1000,
+                    num_training_steps=10000)}
+
     trainer = Trainer(
         checkpoint_callback=checkpoint_callback,
         callbacks=[LoggingCallback(), early_stop_callback],
-        **cfg.trainer
+        **cfg.trainer, scheduler=scheduler, scheduler_args=scheduler_args
     )
     log.info("Training...")
     # 8. Fit model
