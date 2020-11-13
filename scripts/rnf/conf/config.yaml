@@ -22,5 +22,5 @@ trainer:
     max_epochs: 15
     deterministic: True
 vectors:
-    name: null
+    name: "840B"
 

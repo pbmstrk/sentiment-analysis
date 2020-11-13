@@ -90,7 +90,7 @@ def main(cfg: DictConfig):
     model = RNF(
         input_size=len(vocab), num_class=num_class, embed_mat=embed_mat, **cfg.model
     )
-    optimizer = get_optimizer(model, **cfg.optimizer)
+    optimizer = get_optimizer(model, **OmegaConf.to_container(cfg.optimizer))
     scheduler = None
     if hasattr(cfg, "scheduler"):
         scheduler = get_scheduler(optimizer, **cfg.scheduler)
