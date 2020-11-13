@@ -29,8 +29,10 @@ class ModelTest:
 
         trainer = pl.Trainer(**trainer_options)
 
+        optimizer = torch.optim.Adam(model.parameters())
+
         classifier = TextClassifier(
-            model, scheduler_name="StepLR", scheduler_args={"step_size": 1}
+            model, optimizer=optimizer
         )
 
         # check if model actually trains

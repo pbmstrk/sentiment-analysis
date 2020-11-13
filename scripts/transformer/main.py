@@ -5,7 +5,6 @@ from omegaconf import DictConfig, OmegaConf
 from pytorch_lightning import Trainer, seed_everything
 from pytorch_lightning.callbacks import Callback, ModelCheckpoint
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
-import torch
 
 from text_classification import TextClassifier
 from text_classification.datamodule import DataModule
@@ -14,6 +13,7 @@ from text_classification.encoders import TransformerEncoder
 from text_classification.models import TransformerWithClassifierHead
 from text_classification.tokenizers import TokenizerSST
 from text_classification.vocab import Vocab
+from text_classification.utils import get_optimizer, get_scheduler
 
 log = logging.getLogger(__name__)
 
@@ -92,14 +92,16 @@ def main(cfg: DictConfig):
         batch_size=cfg.datamodule.batch_size,
     )
 
-    scheduler_args = {"lr_lambda": linear_schedule_with_warmup(num_warmup_steps=1000,
-                    num_training_steps=10000)}
+    
 
     # 6. Setup model
     num_class = 5 if cfg.dataset.fine_grained else 2
     model = TransformerWithClassifierHead(input_size=len(vocab), num_class=num_class, **cfg.model)
-    classifier = TextClassifier(model, **cfg.text_classifier, scheduler_name="LambdaLR", 
-                    scheduler_args=scheduler_args)
+    optimizer = get_optimizer(model, **cfg.optimizer)
+    scheduler_args = {"lr_lambda": linear_schedule_with_warmup(num_warmup_steps=1000,
+                            num_training_steps=cfg.trainer.max_steps)}
+    scheduler = get_scheduler(optimizer, name="LambdaLR", args=scheduler_args)
+    classifier = TextClassifier(model, optimizer=optimizer, scheduler=scheduler)
 
     # 7. Setup trainer
     early_stop_callback = EarlyStopping(
