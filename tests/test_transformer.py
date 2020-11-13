@@ -5,7 +5,7 @@ import torch
 from torch.utils.data import DataLoader
 
 from text_classification import TextClassifier
-from text_classification.models import Transformer
+from text_classification.models import TransformerWithClassifierHead
 
 from .base import FakeDataset, ModelTest
 
@@ -19,7 +19,7 @@ class TestTransformer(ModelTest):
 
         # define model
         model_options = {"input_size": data.num_input, "num_class": data.num_output}
-        model = Transformer(**model_options)
+        model = TransformerWithClassifierHead(**model_options)
 
         # run test
         self.check_output_shape(model, dataloader, torch.Size([32, 5]))
@@ -41,7 +41,7 @@ class TestTransformer(ModelTest):
 
         # define model
         model_options = {"input_size": data.num_input, "num_class": data.num_output}
-        model = Transformer(**model_options)
+        model = TransformerWithClassifierHead(**model_options)
 
         # run test
         self.run_model_test(trainer_options, model, dataloader)
@@ -65,7 +65,7 @@ class TestTransformer(ModelTest):
 
         # define model
         model_options = {"input_size": data.num_input, "num_class": data.num_output}
-        model = Transformer(**model_options)
+        model = TransformerWithClassifierHead(**model_options)
 
         # run test
         self.run_model_test(trainer_options, model, dataloader)

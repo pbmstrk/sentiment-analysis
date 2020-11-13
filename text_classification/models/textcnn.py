@@ -7,6 +7,29 @@ import torch.nn.functional as F
 
 
 class TextCNN(nn.Module):
+
+    r"""
+    Convolution Neural Network for Text Classification
+
+    Reference: `Kim (2014). Convolutional Neural Networks for Sentence Classification. <https://www.aclweb.org/anthology/D14-1181/>`_
+
+    Args:
+        input_size: Input size, for most cases size of vocabularly.
+        num_class: Number of classes.
+        embed_dim: Size of the pre-trained word embeddings.
+        kernel_sizes: Tuple containing kernel sizes.
+        out_channels: Number of output channels for CNN.
+        dropout: Dropout applied to the output of CNN.
+        embed_dropout: Dropout applied to the word embeddings
+        embed_mat: Pre-trained word-embedddings. Size should match (input_size, embed_dim)
+        freeze_embed: Freeze embedding weights during training.
+
+    Example::
+
+        # for binary classification
+        >>> CNNmodel = TextCNN(input_size=100, num_class=2)
+    """
+
     def __init__(
         self,
         input_size: int,
@@ -50,7 +73,7 @@ class TextCNN(nn.Module):
         inputs, _ = batch
         # inputs:  [BATCH_SIZE, LONGEST_SEQ]
 
-        embeds = self.embed_drop(self.embedding(inputs).permute(0, 2, 1))
+        embeds = self.embed_drop(self.embedding(inputs).transpose(1,2))
         # embeds = [BATCH_SIZE, EMBED_DIM, LONGEST_SEQ]
 
         convs = [F.relu(conv(embeds)) for conv in self.convs]
