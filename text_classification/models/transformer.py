@@ -167,6 +167,30 @@ class Encoder(nn.Module):
         return x, pooled_output
 
 class TransformerWithClassifierHead(nn.Module):
+
+    r"""
+    Transformer with Classification Head
+
+    Reference: `Vaswani et al. (2017). Attention is All you Need. <https://papers.nips.cc/paper/2017/hash/3f5ee243547dee91fbd053c1c4a845aa-Abstract.html>`_
+
+    Args:
+        input_size: Input size, for most cases size of vocabularly.
+        num_class: Number of classes.
+        hid_dim: Dimension of the transformer.
+        n_layers: Number of encoder layers.
+        n_heads: Number of heads used in multi-head attention.
+        pf_dim: Dimension of the feed-forward layer.
+        dropout: Dropout used in each encoder layer.
+        mlp_dim: Dimension of the classification head.
+        padding_idx: Index of the padding token.
+        max_length: Max length of the transformer.
+
+    Example::
+
+        # for binary classification
+        >>> model = TransformerWithClassifierHead(input_size=100, num_class=2)
+    """
+
     def __init__(
         self,
         input_size: int,

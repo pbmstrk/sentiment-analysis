@@ -38,28 +38,31 @@ class TimeDistributedLSTM(nn.Module):
 
         return outputs
 
+class RNFFormatter(nn.Module):
 
-def format_conv_input(x, filter_width, sent_len):
+    def __init__(self, filter_width):
+        super().__init__()
 
-    chunks = []
-    if sent_len - filter_width + 1 <= 1:
-        return x.unsqueeze(1)
-    for i in range(sent_len - filter_width + 1):
-        chunk = x[:, i : i + filter_width, :]
-        chunk = chunk.unsqueeze(1)
-        chunks.append(chunk)
-    return torch.cat(chunks, 1)
+        self.filter_width = filter_width
 
-
+    def forward(self, x):
+        
+        sent_len = x.shape[1]
+        chunks = []
+        if sent_len - self.filter_width + 1 <= 1:
+            return x.unsqueeze(1)
+        for i in range(sent_len - self.filter_width + 1):
+            chunk = x[:, i : i + self.filter_width, :]
+            chunk = chunk.unsqueeze(1)
+            chunks.append(chunk)
+        return torch.cat(chunks, 1)
+    
 class RNF(nn.Module):
 
     r"""
-    Convolutional Neural Networks with Recurrent Neural Filters
+    Convolutional Neural Networks with Recurrent Neural Filters (RNF)
 
-    Implementation of model which uses reccurent networks as convolution
-    filters.
-
-    Reference: `Yi Yang (2018). Convolutional neural networks with recurrent neural filters. <https://www.aclweb.org/anthology/D18-1109/>`_
+    Reference: `Yang (2018). Convolutional neural networks with recurrent neural filters. <https://www.aclweb.org/anthology/D18-1109/>`_
 
     Args:
         input_size: Input size, for most cases size of vocabularly.
@@ -70,16 +73,12 @@ class RNF(nn.Module):
         embed_dropout: Dropout applied to the word embeddings
         dropout: Dropout applied to the output of the LSTM.
         embed_mat: Pre-trained word-embedddings. Size should match (input_size, embed_dim)
-        freeze_embed: Freeze embedding weights during training. For example, to keep pre-trained
-            vectors (e.g. GloVe) fixed during training
-        optimizer_name: Optimzer to use during training, pass name of optimizer found in
-            torch.optim module
-        optimizer_args: Arguments to pass to optimizer.
+        freeze_embed: Freeze embedding weights during training. 
 
     Example::
 
         # for binary classification
-        >>> RNFModel = RNF(input_size=100, num_class=2)
+        >>> RNFmodel = RNF(input_size=100, num_class=2)
     """
 
     def __init__(
@@ -96,8 +95,6 @@ class RNF(nn.Module):
     ):
         super().__init__()
 
-        self.filter_width = filter_width
-
         self.embedding = nn.Embedding(input_size, embed_dim, padding_idx=0)
         if embed_mat is not None:
             self.embedding = self.embedding.from_pretrained(
@@ -105,6 +102,8 @@ class RNF(nn.Module):
             )
         if freeze_embed:
             self.embedding.weight.requires_grad = False
+
+        self.rnf_formatter = RNFFormatter(filter_width)
 
         self.time_lstm = TimeDistributedLSTM(
             embed_dim, hidden_dim, time_axis=1, dropout=dropout
@@ -122,9 +121,7 @@ class RNF(nn.Module):
         embedded = self.embed_drop(self.embedding(inputs))
         # embedded: [BATCH_SIZE, LONGEST_SEQ, EMBED_DIM]
 
-        lstm_inputs = format_conv_input(
-            embedded, filter_width=self.filter_width, sent_len=embedded.shape[1]
-        )
+        lstm_inputs = self.rnf_formatter(embedded)
         # lstm_inputs: [BATCH SIZE, LONGEST SEQ - FILTER_WIDTH + 1,
         # FILTER_WIDTH, EMBED_DIM]
 

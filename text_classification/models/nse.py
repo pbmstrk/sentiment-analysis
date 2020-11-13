@@ -7,6 +7,27 @@ import torch.nn.functional as F
 
 
 class NSE(nn.Module):
+
+    r"""
+    Neural Semantic Encoder
+
+    Reference: `Munkhdalai and Yu (2017). Neural Semantic Encoders. <https://www.aclweb.org/anthology/E17-1038/>`_
+
+    Args:
+        input_size: Input size, for most cases size of vocabularly.
+        num_class: Number of classes.
+        n_units: Dimension of embedding and LSTM layers.
+        mlp_dim: Dimension of hidden layer in classification head.
+        embed_mat: Pre-trained word-embedddings. 
+        dropout: Dropout applied to classification head
+        freeze_embed: Freeze embedding weights during training. 
+
+    Example::
+
+        # for binary classification
+        >>> NSEmodel = NSE(input_size=100, num_class=2)
+    """
+
     def __init__(
         self,
         input_size: int,
