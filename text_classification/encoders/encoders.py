@@ -1,38 +1,50 @@
-from abc import abstractmethod
-
 import torch
 from torch.nn.utils.rnn import pad_sequence
 
 
-class BaseEncoder:
-    @abstractmethod
-    def __call__(self):
-        raise NotImplementedError
+from .base import VocabMixin, BaseEncoder, TargetEncodingMixin
 
+class BasicEncoder(
+    BaseEncoder,
+    VocabMixin,
+    TargetEncodingMixin
+):
 
-class CNNEncoder(BaseEncoder):
-    def __init__(self, vocab, target_encoding):
-        self.vocab = vocab
-        self.target_encoding = target_encoding
+    def __init__(self, return_seq_lengths=False):
+        self.return_seq_lengths = return_seq_lengths
 
-    def __call__(self, batch):
+    def __call__(self, inputs, targets):
 
-        batch = [self._encode(item) for item in batch]
+        # allow input to also be list instead of nested list 
+        if not all(isinstance(inp, list) for inp in inputs):
+            inputs = [inputs]
 
-        data = [item[0] for item in batch]
-        targets = [item[1] for item in batch]
+        inputs = self.encode_inputs(inputs)
+        targets = self.encode_targets(targets)
 
-        # pad the sequences
-        x = pad_sequence(data, batch_first=True)
+        seq_lengths = torch.tensor([len(t) for t in inputs])
 
-        return x.long(), torch.Tensor(targets).long()
+        inputs = pad_sequence(inputs, batch_first=True)
 
-    def _encode(self, example):
+        if self.return_seq_lengths:
+            return inputs.long(), targets.long()
+        
+        return inputs.long(), targets.long(), seq_lengths
 
-        text = torch.tensor([self.vocab[word] for word in example[0]])
-        label = torch.tensor(self.target_encoding[example[1]])
+    def encode_inputs(self, inputs):
+        return [torch.tensor(self.convert_token_to_ids(inp)) for inp in inputs]
 
-        return text, label
+    def encode_targets(self, targets):
+        return torch.tensor([self.convert_targets(tar) for tar in targets])
+
+    def collate_fn(self, batch):
+
+        unzip_batch = lambda x: list(map(list, zip(*batch))
+
+        inputs, targets = unzip_batch(batch)
+
+        return self(inputs=inputs, targets=targets)
+
 
 
 class LSTMEncoder(BaseEncoder):
