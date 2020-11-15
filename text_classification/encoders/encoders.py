@@ -1,7 +1,6 @@
 import torch
 from torch.nn.utils.rnn import pad_sequence
 
-
 from .base import VocabMixin, BaseEncoder, TargetEncodingMixin
 
 class BasicEncoder(
@@ -46,58 +45,42 @@ class BasicEncoder(
         return self(inputs=inputs, targets=targets)
 
 
+class TransformerEncoder(
+    BaseEncoder,
+    VocabMixin,
+    TargetEncodingMixin
+):
 
-class LSTMEncoder(BaseEncoder):
-    def __init__(self, vocab, target_encoding):
-        self.vocab = vocab
-        self.target_encoding = target_encoding
+    def __call__(self, inputs, targets):
 
-    def __call__(self, batch):
+        # allow input to also be list instead of nested list 
+        if not all(isinstance(inp, list) for inp in inputs):
+            inputs = [inputs]
 
-        batch = [self._encode(item) for item in batch]
+        inputs = self.encode_inputs(inputs)
+        targets = self.encode_targets(targets)
 
-        data = [item[0] for item in batch]
-        targets = [item[1] for item in batch]
+        inputs = pad_sequence(inputs, batch_first=True)
 
-        seqlengths = [len(el) for el in data]
+        return inputs.long(), targets.long(), seq_lengths
 
-        x = pad_sequence(data, batch_first=True)
+    def encode_inputs(self, inputs):
 
-        return x.long(), torch.Tensor(targets).long(), seqlengths
+        assert hasattr(self, "cls_token_index") and hasattr(self, "sep_token_index")
 
-    def _encode(self, example):
+        return [torch.tensor(
+            [self.cls_token_index]
+            + self.convert_token_to_ids(inp)
+            + [self.sep_token_index]
+        ) for inp in inputs]
 
-        text = torch.tensor([self.vocab[word] for word in example[0]])
-        label = torch.tensor(self.target_encoding[example[1]])
+    def encode_targets(self, targets):
+        return torch.tensor([self.convert_targets(tar) for tar in targets])
 
-        return text, label
+    def collate_fn(self, batch):
 
+        unzip_batch = lambda x: list(map(list, zip(*batch))
 
-class TransformerEncoder(BaseEncoder):
-    def __init__(self, vocab, target_encoding):
-        self.vocab = vocab
-        self.target_encoding = target_encoding
+        inputs, targets = unzip_batch(batch)
 
-        assert hasattr(vocab, "cls_token") and hasattr(vocab, "sep_token")
-
-    def __call__(self, batch):
-
-        batch = [self._encode(item) for item in batch]
-
-        data = [item[0] for item in batch]
-        targets = [item[1] for item in batch]
-
-        x = pad_sequence(data, batch_first=True)
-
-        return x.long(), torch.Tensor(targets).long()
-
-    def _encode(self, example):
-
-        text = torch.tensor(
-            [self.vocab.cls_token]
-            + [self.vocab[word] for word in example[0]]
-            + [self.vocab.sep_token]
-        )
-        label = torch.tensor(self.target_encoding[example[1]])
-
-        return text, label
+        return self(inputs=inputs, targets=targets)
