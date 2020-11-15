@@ -1,1 +1,1 @@
-from .encoders import BasicEncoder, LSTMEncoder, TransformerEncoder
+from .encoders import BasicEncoder, TransformerEncoder

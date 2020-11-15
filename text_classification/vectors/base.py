@@ -5,7 +5,6 @@ import numpy as np
 from tqdm import tqdm
 
 from ..utils import download_extract
-from ..vocab import Vocab
 
 
 def extract_vectors(filepath: str) -> Dict:
@@ -28,7 +27,7 @@ class Vectors:
         self.vector_map = vector_map
         self.dim = dim
 
-    def get_matrix(self, vocab: Union[List, Vocab]) -> np.ndarray:
+    def get_matrix(self, vocab: Union[List, Dict]) -> np.ndarray:
 
         r"""
         Returns an embedding matrix (lookup table) of word vectors given a vocabularly.

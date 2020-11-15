@@ -68,6 +68,10 @@ class VocabMixin:
 
         return list(map(self.convert_token, tokens))
 
+    @property
+    def vocab(self):
+        return self.encoding
+
     @staticmethod
     def _process_dataset(data: Union[TextDataset, List[str], List[TextDataset]]
     ) -> Counter:
