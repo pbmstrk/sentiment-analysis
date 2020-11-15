@@ -120,6 +120,7 @@ class EncoderLayer(nn.Module):
 
         return src
 
+
 class Encoder(nn.Module):
     def __init__(
         self,
@@ -129,8 +130,8 @@ class Encoder(nn.Module):
         n_heads,
         pf_dim,
         dropout,
-        padding_idx = 0,
-        max_length = 284
+        padding_idx=0,
+        max_length=284
     ):
         super().__init__()
 
@@ -163,7 +164,7 @@ class Encoder(nn.Module):
         for layer in self.layers:
             x = layer(x, x_mask)
 
-        pooled_output = x.transpose(0,1)[0]
+        pooled_output = x.transpose(0, 1)[0]
         return x, pooled_output
 
 class TransformerWithClassifierHead(nn.Module):
