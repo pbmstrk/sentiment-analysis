@@ -13,6 +13,9 @@ class BaseEncoder:
     def __call__(self):
         raise NotImplementedError
 
+    def unzip_batch(batch):
+        return list(map(list, zip(*batch)))
+
 class VocabMixin:
 
     def add_vocab(

@@ -38,9 +38,7 @@ class BasicEncoder(
 
     def collate_fn(self, batch):
 
-        unzip_batch = lambda x: list(map(list, zip(*batch))
-
-        inputs, targets = unzip_batch(batch)
+        inputs, targets = self.unzip_batch(batch)
 
         return self(inputs=inputs, targets=targets)
 
@@ -79,8 +77,6 @@ class TransformerEncoder(
 
     def collate_fn(self, batch):
 
-        unzip_batch = lambda x: list(map(list, zip(*batch))
-
-        inputs, targets = unzip_batch(batch)
+        inputs, targets = self.unzip_batch(batch)
 
         return self(inputs=inputs, targets=targets)
