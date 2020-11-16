@@ -26,15 +26,15 @@ class BasicEncoder(
         inputs = pad_sequence(inputs, batch_first=True)
 
         if self.return_seq_lengths:
-            return inputs.long(), targets.long()
+            return inputs.long(), targets.long(), seq_lengths
         
-        return inputs.long(), targets.long(), seq_lengths
+        return inputs.long(), targets.long()
 
     def encode_inputs(self, inputs):
         return [torch.tensor(self.convert_token_to_ids(inp)) for inp in inputs]
 
     def encode_targets(self, targets):
-        return torch.tensor([self.convert_targets(tar) for tar in targets])
+        return torch.tensor(self.convert_targets(targets))
 
     def collate_fn(self, batch):
 
@@ -60,7 +60,7 @@ class TransformerEncoder(
 
         inputs = pad_sequence(inputs, batch_first=True)
 
-        return inputs.long(), targets.long(), seq_lengths
+        return inputs.long(), targets.long()
 
     def encode_inputs(self, inputs):
 
@@ -73,7 +73,7 @@ class TransformerEncoder(
         ) for inp in inputs]
 
     def encode_targets(self, targets):
-        return torch.tensor([self.convert_targets(tar) for tar in targets])
+        return torch.tensor(self.convert_targets(targets))
 
     def collate_fn(self, batch):
 

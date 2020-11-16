@@ -13,7 +13,7 @@ class BaseEncoder:
     def __call__(self):
         raise NotImplementedError
 
-    def unzip_batch(batch):
+    def unzip_batch(self, batch):
         return list(map(list, zip(*batch)))
 
 class VocabMixin:

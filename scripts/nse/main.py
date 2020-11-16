@@ -78,7 +78,7 @@ def main(cfg: DictConfig):
         train=train,
         val=val,
         test=test,
-        encoder=encoder,
+        collate_fn=encoder.collate_fn,
         batch_size=cfg.datamodule.batch_size,
     )
 
