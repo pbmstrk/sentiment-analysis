@@ -12,7 +12,6 @@ from text_classification.datasets import SSTDatasetAlt
 from text_classification.encoders import TransformerEncoder
 from text_classification.models import TransformerWithClassifierHead
 from text_classification.tokenizers import TokenizerSST
-from text_classification.vocab import Vocab
 from text_classification.utils import get_optimizer, get_scheduler
 
 log = logging.getLogger(__name__)
@@ -72,29 +71,25 @@ def main(cfg: DictConfig):
     # 1. Get SST dataset
     train, val, test = SSTDatasetAlt(root=root, tokenizer=TokenizerSST(), **cfg.dataset)
 
-    log.info("Creating vocab...")
-    # 2. Get vocab
-    vocab = Vocab(
-        [train, val, test],
+    # 2. Setup encoder 
+    encoder = TransformerEncoder()
+    encoder.add_vocab([train, val, test],
         special_tokens={"cls_token": "<cls>", "sep_token": "<sep>"},
-        **cfg.vocab
-    )
-
-    # 4. Setup encoder to encode examples
-    encoder = TransformerEncoder(vocab=vocab, target_encoding=target_encoding)
+        **cfg.vocab)
+    encoder.add_target_encoding(target_encoding)
 
     # 5. Setup train, val and test dataloaders
     dm = DataModule(
         train=train,
         val=val,
         test=test,
-        encoder=encoder,
+        collate_fn=encoder.collate_fn,
         batch_size=cfg.datamodule.batch_size,
     )
 
     # 6. Setup model
     num_class = 5 if cfg.dataset.fine_grained else 2
-    model = TransformerWithClassifierHead(input_size=len(vocab), num_class=num_class, **cfg.model)
+    model = TransformerWithClassifierHead(input_size=len(encoder.vocab), num_class=num_class, **cfg.model)
     optimizer = get_optimizer(model, **OmegaConf.to_container(cfg.optimizer))
     scheduler_args = {"lr_lambda": linear_schedule_with_warmup(num_warmup_steps=1000,
                             num_training_steps=cfg.trainer.max_steps)}

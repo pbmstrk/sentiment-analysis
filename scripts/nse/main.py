@@ -73,7 +73,7 @@ def main(cfg: DictConfig):
         vectors = GloVe(root=root, name=cfg.vectors.name, dim=300)
         embed_mat = vectors.get_matrix(encoder.vocab)
 
-    # 5. Setup train, val and test dataloaders
+    # 4. Setup train, val and test dataloaders
     dm = DataModule(
         train=train,
         val=val,
