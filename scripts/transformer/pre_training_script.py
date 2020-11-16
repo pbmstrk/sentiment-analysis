@@ -8,8 +8,8 @@ from text_classification.datamodule import DataModule
 from text_classification.datasets import SSTDatasetAlt
 from text_classification.tokenizers import TokenizerSST
 
-from .pre_training_model import TransformerWithMLMHead, MAX_STEPS
-from .pre_training_tokenizer import TransformerEncoderMLM
+from pre_training_model import TransformerWithMLMHead, MAX_STEPS
+from pre_training_tokenizer import TransformerEncoderMLM
 
 log = logging.getLogger(__name__)
 

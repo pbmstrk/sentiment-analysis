@@ -56,7 +56,7 @@ class TransformerWithMLMHead(pl.LightningModule):
 
     def forward(self, x):
         hidden_states = self.encoder(x)
-        logits = self.lm_head(hidden_states)
+        logits = self.lm_head(hidden_states[0])
 
         return logits
 
@@ -128,6 +128,6 @@ class TransformerWithMLMHead(pl.LightningModule):
         optimizer = torch.optim.AdamW(optimizer_grouped_parameters, lr=LEARNING_RATE)
 
         lr_scheduler = get_linear_schedule_with_warmup(
-            self.optimizer, num_warmup_steps=WARMUP_STEPS, num_training_steps=MAX_STEPS
+            optimizer, num_warmup_steps=WARMUP_STEPS, num_training_steps=MAX_STEPS
         )
         return [optimizer], [lr_scheduler]

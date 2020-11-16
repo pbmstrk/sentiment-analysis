@@ -49,7 +49,7 @@ class TransformerEncoderMLM(BaseEncoder, VocabMixin):
         labels[~masked_indices] = -1
 
         indices_replaced = (
-            torch.bernoulli(torchs.full(labels.shape, 0.8)).bool() & masked_indices
+            torch.bernoulli(torch.full(labels.shape, 0.8)).bool() & masked_indices
         )
         inputs[indices_replaced] = self.mask_token_index
 
