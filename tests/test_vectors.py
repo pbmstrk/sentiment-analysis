@@ -1,7 +1,7 @@
 import numpy as np
 
 from text_classification.vectors.base import Vectors
-from text_classification.vocab import Vocab
+from text_classification.encoders.base import VocabMixin
 
 
 class TestVectors:
@@ -16,9 +16,9 @@ class TestVectors:
         vec = Vectors(3, vector_map)
 
         # get matrix from vocab object
-        vocab = Vocab(["test", "vectors"])
-        matrix = vec.get_matrix(vocab)
-        assert all(matrix[vocab["test"]] == vector_map["test"])
+        vocab = VocabMixin().add_vocab(["test", "vectors"])
+        matrix = vec.get_matrix(vocab.vocab)
+        assert all(matrix[vocab.vocab["test"]] == vector_map["test"])
 
         # get matrix from list
         vocab = ["test", "vectors"]

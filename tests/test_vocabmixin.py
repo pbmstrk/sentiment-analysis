@@ -1,9 +1,10 @@
 from text_classification.datasets import TextDataset
 from text_classification.datasets.base import Example
-from text_classification.vocab import Vocab
+from text_classification.encoders.base import VocabMixin
 
 
-class TestVocab:
+class TestVocabMixin:
+
     def test_from_dataset(self):
 
         dataset = TextDataset(
@@ -13,17 +14,17 @@ class TestVocab:
             ]
         )
 
-        vocab = Vocab(dataset)
+        vocab = VocabMixin().add_vocab(dataset)
 
-        assert len(vocab) == 6 + vocab.num_all_special_tokens
+        assert vocab.num_tokens == 6 + 2
 
     def test_from_list(self):
 
         lst = ["Test", "the", "vocab", "class"] + ["another", "example"]
 
-        vocab = Vocab(lst)
+        vocab = VocabMixin().add_vocab(lst, pad_token=None, unk_token=None)
 
-        assert len(vocab) == 6 + vocab.num_all_special_tokens
+        assert vocab.num_tokens == 6
 
     def test_from_multiple_datasets(self):
 
@@ -36,9 +37,9 @@ class TestVocab:
 
         dataset2 = TextDataset([Example(text=["Second", "dataset"], label=None)])
 
-        vocab = Vocab([dataset1, dataset2])
+        vocab = VocabMixin().add_vocab([dataset1, dataset2])
 
-        assert len(vocab) == 8 + vocab.num_all_special_tokens
+        assert vocab.num_tokens == 8 + 2 # number of special tokens
 
     def test_special_tokens(self):
 
@@ -51,6 +52,6 @@ class TestVocab:
 
         special_tokens = {"sos_token": "<sos>", "eos_token": "<eos>"}
 
-        vocab = Vocab(dataset, special_tokens=special_tokens)
+        vocab = VocabMixin().add_vocab(dataset, special_tokens=special_tokens)
 
-        assert hasattr(vocab, "sos_token") and hasattr(vocab, "eos_token")
+        assert hasattr(vocab, "sos_token_index") and hasattr(vocab, "eos_token_index")

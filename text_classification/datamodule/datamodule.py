@@ -9,7 +9,7 @@ class DataModule:
     def __init__(
         self,
         train: TextDataset,
-        encoder: Optional[Callable] = None,
+        collate_fn: Optional[Callable] = None,
         val: Optional[TextDataset] = None,
         test: Optional[TextDataset] = None,
         batch_size: int = 16,
@@ -18,7 +18,7 @@ class DataModule:
         self.train = train
         self.val = val
         self.test = test
-        self.encoder = encoder
+        self.collate_fn = collate_fn
         self.batch_size = batch_size
 
     def train_dataloader(self) -> DataLoader:
@@ -27,7 +27,7 @@ class DataModule:
             self.train,
             batch_size=self.batch_size,
             shuffle=True,
-            collate_fn=self.encoder,
+            collate_fn=self.collate_fn,
         )
 
     def val_dataloader(self) -> DataLoader:
@@ -35,7 +35,7 @@ class DataModule:
         if not self.val:
             raise ValueError
 
-        return DataLoader(self.val, batch_size=self.batch_size, collate_fn=self.encoder)
+        return DataLoader(self.val, batch_size=self.batch_size, collate_fn=self.collate_fn)
 
     def test_dataloader(self) -> DataLoader:
 
@@ -43,5 +43,5 @@ class DataModule:
             raise ValueError
 
         return DataLoader(
-            self.test, batch_size=self.batch_size, collate_fn=self.encoder
+            self.test, batch_size=self.batch_size, collate_fn=self.collate_fn
         )

@@ -1,1 +1,1 @@
-from .encoders import CNNEncoder, LSTMEncoder, TransformerEncoder
+from .encoders import BasicEncoder, TransformerEncoder
