@@ -72,7 +72,7 @@ def main(cfg: DictConfig):
         log.info("Downloading pre-trained word vectors...")
         vectors = GloVe(root=root, name=cfg.vectors.name, dim=300)
         embed_mat = vectors.get_matrix(encoder.vocab)
-        
+
     # 4. Setup train, val and test dataloaders
     dm = DataModule(
         train=train,
@@ -85,7 +85,10 @@ def main(cfg: DictConfig):
     # 6. Setup model, optimizer and scheduler
     num_class = 5 if cfg.dataset.fine_grained else 2
     model = TextCNN(
-        input_size=len(encoder.vocab), num_class=num_class, embed_mat=embed_mat, **cfg.model
+        input_size=len(encoder.vocab),
+        num_class=num_class,
+        embed_mat=embed_mat,
+        **cfg.model
     )
     optimizer = get_optimizer(model, **OmegaConf.to_container(cfg.optimizer))
     scheduler = None

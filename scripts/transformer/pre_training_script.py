@@ -6,14 +6,13 @@ from pytorch_lightning import Trainer, seed_everything
 from pytorch_lightning.callbacks import Callback, ModelCheckpoint
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 
-from text_classification import TextClassifier
 from text_classification.datamodule import DataModule
 from text_classification.datasets import SSTDatasetAlt
-from text_classification.encoders import BasicEncoder
-from text_classification.models import NSE
 from text_classification.tokenizers import TokenizerSST
-from text_classification.vectors import GloVe
 from text_classification.utils import get_optimizer, get_scheduler
+
+from .pre_training_model import TransformerWithMLMHead
+from .pre_training_tokenizer import TransformerEncoderMLM
 
 log = logging.getLogger(__name__)
 
@@ -24,16 +23,13 @@ class LoggingCallback(Callback):
         epoch = trainer.current_epoch
         log.info("Epoch: %s", epoch)
         log.info(
-            "Training Acc: %.4f\t Training Loss: %.4f",
-            metrics["train_epoch_acc"],
+            "Training Loss: %.4f",
             metrics["train_epoch_loss"],
         )
         log.info(
-            "Validation Acc: %.4f\t Validation Loss: %.4f",
-            metrics["val_epoch_acc"],
+            "Validation Loss: %.4f",
             metrics["val_epoch_loss"],
         )
-
 
 @hydra.main(config_path="conf", config_name="config")
 def main(cfg: DictConfig):
@@ -41,17 +37,6 @@ def main(cfg: DictConfig):
     log.info("Arguments:\n %s", OmegaConf.to_yaml(cfg))
 
     seed_everything(42)
-
-    if not cfg.dataset.fine_grained:
-        target_encoding = {"negative": 0, "positive": 1}
-    else:
-        target_encoding = {
-            "very negative": 0,
-            "negative": 1,
-            "neutral": 2,
-            "positive": 3,
-            "very positive": 4,
-        }
 
     # hydra generates a new working directory for each run
     # want to store data in same directory each run
@@ -61,19 +46,15 @@ def main(cfg: DictConfig):
     # 1. Get SST dataset
     train, val, test = SSTDatasetAlt(root=root, tokenizer=TokenizerSST(), **cfg.dataset)
 
-    # 2. Setup Encoder
-    encoder = BasicEncoder(return_seq_lengths=True)
-    encoder.add_vocab([train, val, test], **cfg.vocab)
-    encoder.add_target_encoding(target_encoding)
+    # 2. Setup encoder
+    encoder = TransformerEncoderMLM()
+    encoder.add_vocab(
+        [train, val, test],
+        special_tokens={"cls_token": "<cls>", "sep_token": "<sep>", "mask_token": "<mask>"},
+        **cfg.vocab
+    )
 
-    # 3. Optionally retrieve pre-trained embeddings
-    embed_mat = None
-    if cfg.vectors.name:
-        log.info("Downloading pre-trained word vectors...")
-        vectors = GloVe(root=root, name=cfg.vectors.name, dim=300)
-        embed_mat = vectors.get_matrix(encoder.vocab)
-
-    # 4. Setup train, val and test dataloaders
+    # 5. Setup train, val and test dataloaders
     dm = DataModule(
         train=train,
         val=val,
@@ -83,19 +64,9 @@ def main(cfg: DictConfig):
     )
 
     # 6. Setup model
-    num_class = 5 if cfg.dataset.fine_grained else 2
-    model = NSE(
-        input_size=len(encoder.vocab),
-        num_class=num_class,
-        embed_mat=embed_mat,
-        **cfg.model
+    model = TransformerWithMLMHead(
+        input_size=len(encoder.vocab)
     )
-    optimizer = get_optimizer(model, **OmegaConf.to_container(cfg.optimizer))
-    scheduler = None
-    if hasattr(cfg, "scheduler"):
-        scheduler = get_scheduler(optimizer, **cfg.scheduler)
-
-    classifier = TextClassifier(model, optimizer=optimizer, scheduler=scheduler)
 
     # 7. Setup trainer
     early_stop_callback = EarlyStopping(
@@ -121,7 +92,7 @@ def main(cfg: DictConfig):
     )
     log.info("Training...")
     # 8. Fit model
-    trainer.fit(classifier, dm.train_dataloader(), dm.val_dataloader())
+    trainer.fit(model, dm.train_dataloader(), dm.val_dataloader())
 
     # 9. Test model
     results = trainer.test(

@@ -33,17 +33,20 @@ class LoggingCallback(Callback):
             metrics["val_epoch_loss"],
         )
 
+
 # adapted from huggingface
 def linear_schedule_with_warmup(num_warmup_steps, num_training_steps):
-
     def lr_lambda(current_step: int):
         if current_step < num_warmup_steps:
             return float(current_step) / float(max(1, num_warmup_steps))
         return max(
-            0.0, float(num_training_steps - current_step) / float(max(1, num_training_steps - num_warmup_steps))
+            0.0,
+            float(num_training_steps - current_step)
+            / float(max(1, num_training_steps - num_warmup_steps)),
         )
 
     return lr_lambda
+
 
 @hydra.main(config_path="conf", config_name="config")
 def main(cfg: DictConfig):
@@ -71,11 +74,13 @@ def main(cfg: DictConfig):
     # 1. Get SST dataset
     train, val, test = SSTDatasetAlt(root=root, tokenizer=TokenizerSST(), **cfg.dataset)
 
-    # 2. Setup encoder 
+    # 2. Setup encoder
     encoder = TransformerEncoder()
-    encoder.add_vocab([train, val, test],
+    encoder.add_vocab(
+        [train, val, test],
         special_tokens={"cls_token": "<cls>", "sep_token": "<sep>"},
-        **cfg.vocab)
+        **cfg.vocab
+    )
     encoder.add_target_encoding(target_encoding)
 
     # 5. Setup train, val and test dataloaders
@@ -89,10 +94,15 @@ def main(cfg: DictConfig):
 
     # 6. Setup model
     num_class = 5 if cfg.dataset.fine_grained else 2
-    model = TransformerWithClassifierHead(input_size=len(encoder.vocab), num_class=num_class, **cfg.model)
+    model = TransformerWithClassifierHead(
+        input_size=len(encoder.vocab), num_class=num_class, **cfg.model
+    )
     optimizer = get_optimizer(model, **OmegaConf.to_container(cfg.optimizer))
-    scheduler_args = {"lr_lambda": linear_schedule_with_warmup(num_warmup_steps=1000,
-                            num_training_steps=cfg.trainer.max_steps)}
+    scheduler_args = {
+        "lr_lambda": linear_schedule_with_warmup(
+            num_warmup_steps=1000, num_training_steps=cfg.trainer.max_steps
+        )
+    }
     scheduler = get_scheduler(optimizer, name="LambdaLR", args=scheduler_args)
     classifier = TextClassifier(model, optimizer=optimizer, scheduler=scheduler)
 

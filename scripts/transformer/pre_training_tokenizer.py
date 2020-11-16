@@ -1,47 +1,95 @@
-from text_classification.encoders.base import BaseEncoder
+from text_classification.encoders.base import BaseEncoder, VocabMixin
+from torch.nn.utils.rnn import pad_sequence
+import torch
 
 
-class TransformerEncoderMLM(BaseEncoder):
-    def __init__(self, vocab):
-        self.vocab = vocab
+class TransformerEncoderMLM(BaseEncoder, VocabMixin):
+    def __call__(self, inputs):
 
-        assert hasattr(vocab, "cls_token") and hasattr(vocab, "sep_token")
-        assert hasattr(vocab, "mask_token")
+        # allow input to also be list instead of nested list
+        if not all(isinstance(inp, list) for inp in inputs):
+            inputs = [inputs]
 
-    def __call__(self, batch):
+        inputs = self.encode_inputs(inputs)
 
-        batch = [self._encode(item) for item in batch]
+        inputs = pad_sequence(inputs, batch_first=True)
+        padding_mask = self.get_padding_mask(inputs)
+        special_token_mask = self.get_special_token_mask(inputs)
 
-        input_ids = [item[0] for item in batch]
-        special_token_mask = [item[1] for item in batch]
+        masked_inputs, masked_labels = self.mask_tokens(
+            inputs, special_token_mask, padding_mask
+        )
 
-        input_ids_pad = pad_sequence(input_ids, batch_first=True)
-        special_token_mask_pad = pad_sequence(special_token_mask, batch_first=True)
-        masked_indices, labels = mask_tokens(input_ids_pad, special_token_mask_pad)
+        return masked_inputs.long(), masked_labels.long()
 
-        return input_ids_pad, special_token_mask_pad, masked_indices, labels
+    def encode_inputs(self, inputs):
 
-    def _encode(self, example):
+        assert hasattr(self, "cls_token_index") and hasattr(self, "sep_token_index")
 
-        encoding = [self.vocab.cls_token] +
-            [self.vocab[word] for word in example[0]] +
-                    [self.vocab.sep_token]
-        
-        special_token_mask = get_special_token_mask(encoding)
+        return [
+            torch.tensor(
+                [self.cls_token_index]
+                + self.convert_token_to_ids(inp)
+                + [self.sep_token_index]
+            )
+            for inp in inputs
+        ]
 
-        return torch.tensor(encoding), torch.tensor(special_token_mask)
+    def encode_targets(self, targets):
+        return torch.tensor(self.convert_targets(targets))
 
-    def mask_tokens(self, inputs, special_token_mask):
+    def mask_tokens(self, inputs, special_token_mask, padding_mask):
 
         labels = inputs.clone()
         probability_matrix = torch.full(labels.shape, 0.15)
 
         probability_matrix.masked_fill_(special_token_mask, value=0.0)
+        probability_matrix.masked_fill_(padding_mask, value=0.0)
         masked_indices = torch.bernoulli(probability_matrix).bool()
         labels[~masked_indices] = -1
 
-        return masked_indices, labels
+        indices_replaced = (
+            torch.bernoulli(torchs.full(labels.shape, 0.8)).bool() & masked_indices
+        )
+        inputs[indices_replaced] = self.mask_token_index
+
+        indices_random = (
+            torch.bernoulli(torch.full(labels.shape, 0.5)).bool()
+            & masked_indices
+            & ~indices_replaced
+        )
+        random_words = torch.randint(len(self.vocab), labels.shape, dtype=torch.long)
+        inputs[indices_random] = random_words[indices_random]
+
+        return inputs, labels
+
+    def get_padding_mask(self, input_ids):
+
+        return torch.tensor(
+            [
+                list(map(lambda x: 1 if x in [self.pad_token_index] else 0, inp))
+                for inp in input_ids
+            ]
+        )
+
     def get_special_token_mask(self, input_ids):
 
-        return list(map(lambda x: 1 if x in [vocab.sep_token, vocab.cls_token] else 0, input_ids))
+        return torch.tensor(
+            [
+                list(
+                    map(
+                        lambda x: 1
+                        if x in [self.sep_token_index, self.cls_token_index]
+                        else 0,
+                        inp,
+                    )
+                )
+                for inp in input_ids
+            ]
+        )
 
+    def collate_fn(self, batch):
+
+        inputs, _ = self.unzip_batch(batch)
+
+        return self(inputs=inputs)

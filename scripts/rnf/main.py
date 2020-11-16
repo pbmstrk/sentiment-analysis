@@ -61,7 +61,7 @@ def main(cfg: DictConfig):
     # 1. Get SST dataset
     train, val, test = SSTDatasetAlt(root=root, tokenizer=TokenizerSST(), **cfg.dataset)
 
-    # 2. Setup encoder 
+    # 2. Setup encoder
     encoder = BasicEncoder()
     encoder.add_vocab([train, val, test], **cfg.vocab)
     encoder.add_target_encoding(target_encoding)
@@ -85,7 +85,10 @@ def main(cfg: DictConfig):
     # 6. Setup model
     num_class = 5 if cfg.dataset.fine_grained else 2
     model = RNF(
-        input_size=len(encoder.vocab), num_class=num_class, embed_mat=embed_mat, **cfg.model
+        input_size=len(encoder.vocab),
+        num_class=num_class,
+        embed_mat=embed_mat,
+        **cfg.model
     )
     optimizer = get_optimizer(model, **OmegaConf.to_container(cfg.optimizer))
     scheduler = None
