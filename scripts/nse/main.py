@@ -9,11 +9,10 @@ from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 from text_classification import TextClassifier
 from text_classification.datamodule import DataModule
 from text_classification.datasets import SSTDatasetAlt
-from text_classification.encoders import LSTMEncoder
+from text_classification.encoders import BasicEncoder
 from text_classification.models import NSE
 from text_classification.tokenizers import TokenizerSST
 from text_classification.vectors import GloVe
-from text_classification.vocab import Vocab
 from text_classification.utils import get_optimizer, get_scheduler
 
 log = logging.getLogger(__name__)
@@ -62,19 +61,17 @@ def main(cfg: DictConfig):
     # 1. Get SST dataset
     train, val, test = SSTDatasetAlt(root=root, tokenizer=TokenizerSST(), **cfg.dataset)
 
-    log.info("Creating vocab...")
-    # 2. Get vocab
-    vocab = Vocab([train, val, test], **cfg.vocab)
+    # 2. Setup Encoder
+    encoder = BasicEncoder(return_seq_lengths=True)
+    encoder.add_vocab([train, val, test], **cfg.vocab)
+    encoder.add_target_encoding(target_encoding)
 
     # 3. Optionally retrieve pre-trained embeddings
     embed_mat = None
     if cfg.vectors.name:
         log.info("Downloading pre-trained word vectors...")
         vectors = GloVe(root=root, name=cfg.vectors.name, dim=300)
-        embed_mat = vectors.get_matrix(vocab)
-
-    # 4. Setup encoder to encode examples
-    encoder = LSTMEncoder(vocab=vocab, target_encoding=target_encoding)
+        embed_mat = vectors.get_matrix(encoder.vocab)
 
     # 5. Setup train, val and test dataloaders
     dm = DataModule(
@@ -88,7 +85,7 @@ def main(cfg: DictConfig):
     # 6. Setup model
     num_class = 5 if cfg.dataset.fine_grained else 2
     model = NSE(
-        input_size=len(vocab), num_class=num_class, embed_mat=embed_mat, **cfg.model
+        input_size=len(encoder.vocab), num_class=num_class, embed_mat=embed_mat, **cfg.model
     )
     optimizer = get_optimizer(model, **OmegaConf.to_container(cfg.optimizer))
     scheduler = None
