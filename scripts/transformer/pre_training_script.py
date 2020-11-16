@@ -1,7 +1,5 @@
 import logging
 
-import hydra
-from omegaconf import DictConfig, OmegaConf
 from pytorch_lightning import Trainer, seed_everything
 from pytorch_lightning.callbacks import Callback, ModelCheckpoint
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
@@ -9,9 +7,8 @@ from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 from text_classification.datamodule import DataModule
 from text_classification.datasets import SSTDatasetAlt
 from text_classification.tokenizers import TokenizerSST
-from text_classification.utils import get_optimizer, get_scheduler
 
-from .pre_training_model import TransformerWithMLMHead
+from .pre_training_model import TransformerWithMLMHead, MAX_STEPS
 from .pre_training_tokenizer import TransformerEncoderMLM
 
 log = logging.getLogger(__name__)
@@ -31,27 +28,20 @@ class LoggingCallback(Callback):
             metrics["val_epoch_loss"],
         )
 
-@hydra.main(config_path="conf", config_name="config")
-def main(cfg: DictConfig):
 
-    log.info("Arguments:\n %s", OmegaConf.to_yaml(cfg))
+def main():
 
     seed_everything(42)
 
-    # hydra generates a new working directory for each run
-    # want to store data in same directory each run
-    root = hydra.utils.to_absolute_path(".data")
-
     log.info("Downloading data...")
     # 1. Get SST dataset
-    train, val, test = SSTDatasetAlt(root=root, tokenizer=TokenizerSST(), **cfg.dataset)
+    train, val, test = SSTDatasetAlt(tokenizer=TokenizerSST(), train_subtrees=True)
 
     # 2. Setup encoder
     encoder = TransformerEncoderMLM()
     encoder.add_vocab(
         [train, val, test],
         special_tokens={"cls_token": "<cls>", "sep_token": "<sep>", "mask_token": "<mask>"},
-        **cfg.vocab
     )
 
     # 5. Setup train, val and test dataloaders
@@ -60,7 +50,7 @@ def main(cfg: DictConfig):
         val=val,
         test=test,
         collate_fn=encoder.collate_fn,
-        batch_size=cfg.datamodule.batch_size,
+        batch_size=64,
     )
 
     # 6. Setup model
@@ -88,8 +78,12 @@ def main(cfg: DictConfig):
     trainer = Trainer(
         checkpoint_callback=checkpoint_callback,
         callbacks=[LoggingCallback(), early_stop_callback],
-        **cfg.trainer
+        gpus=1,
+        progress_bar_refresh_rate=0,
+        max_steps=MAX_STEPS,
+        deterministic=True
     )
+
     log.info("Training...")
     # 8. Fit model
     trainer.fit(model, dm.train_dataloader(), dm.val_dataloader())
