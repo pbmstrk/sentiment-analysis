@@ -40,7 +40,7 @@ def main(cfg: DictConfig):
 
     log.info("Arguments:\n %s", OmegaConf.to_yaml(cfg))
 
-    seed_everything(42)
+    seed_everything(cfg.random.seed)
 
     if not cfg.dataset.fine_grained:
         target_encoding = {"negative": 0, "positive": 1}

@@ -30,3 +30,5 @@ trainer:
   deterministic: True
 vectors:
   name: null
+random:
+  seed: 42
