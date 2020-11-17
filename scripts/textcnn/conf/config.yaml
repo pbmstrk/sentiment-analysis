@@ -28,6 +28,7 @@ trainer:
   progress_bar_refresh_rate: 0
   max_epochs: 25
   deterministic: True
+  gradient_clip_val: 1.0
 vectors:
   name: null
 random:
