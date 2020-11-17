@@ -2,7 +2,15 @@
 
 <h1> Text Classification </h1>
 
-[![Build Status](https://travis-ci.org/pbmstrk/text-classification.svg?branch=master)](https://travis-ci.org/pbmstrk/text-classification)
-
-
 </div>
+
+## TextCNN
+
+
+
+<p align="center">
+  <img src="img/textcnn.png" width=750px/>
+  <br>
+  <em>Overview of the TextCNN architecture. Source: (Kim, 2014)</em>
+</p>
+
