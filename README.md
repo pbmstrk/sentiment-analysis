@@ -9,7 +9,7 @@
 
 The following models are implemented:
 - [Convolutional Neural Networks for Sentence Classification (Kim, 2014)](https://www.aclweb.org/anthology/D14-1181/)
-- [Neural Semantic Encoders (Munkhdalai and Yu, 2017)]((https://arxiv.org/abs/1607.04315))
+- [Neural Semantic Encoders (Munkhdalai and Yu, 2017)](https://arxiv.org/abs/1607.04315)
 - Transformer Encoder - from [Attention is All You Need (Vaswani et al., 2017)](https://arxiv.org/abs/1706.03762)
 - [Convolutional Neural Networks with Recurrent Neural Filters (Yang, 2018)](https://arxiv.org/abs/1808.09315)
 
@@ -18,7 +18,7 @@ Scripts to run models on SST dataset are provided.
 ## TextCNN
 
 <p align="center">
-  <img src="img/textcnn.png" width=750px/>
+  <img src="img/textcnn.png" width=625px/>
   <br>
   <em>TextCNN architecture. Source: (Kim, 2014)</em>
 </p>
@@ -33,7 +33,7 @@ python scripts/textcnn/main.py
 
 
 <p align="center">
-  <img src="img/nse.png" width=750px/>
+  <img src="img/nse.png" width=450px/>
   <br>
   <em>NSE architecture. Source: (Munkhdalai and Yu, 2017)</em>
 </p>
