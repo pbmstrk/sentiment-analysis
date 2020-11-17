@@ -40,7 +40,7 @@ def main(cfg: DictConfig):
 
     log.info("Arguments:\n %s", OmegaConf.to_yaml(cfg))
 
-    seed_everything(42)
+    seed_everything(cfg.random.seed)
 
     if not cfg.dataset.fine_grained:
         target_encoding = {"negative": 0, "positive": 1}
@@ -62,7 +62,7 @@ def main(cfg: DictConfig):
     train, val, test = SSTDatasetAlt(root=root, tokenizer=TokenizerSST(), **cfg.dataset)
 
     # 2. Setup encoder
-    encoder = BasicEncoder()
+    encoder = BasicEncoder(min_size_after_padding=max(cfg.model.kernel_sizes) + 1)
     encoder.add_vocab([train, val, test], **cfg.vocab)
     encoder.add_target_encoding(target_encoding)
 

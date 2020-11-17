@@ -9,24 +9,26 @@ model:
   kernel_sizes: [3,4,5]
   out_channels: 100
   dropout: 0.5
-  embed_dropout: 0.5
+  embed_dropout: 0.1
   freeze_embed: False
 datamodule:
   batch_size: 64
 optimizer:
-  name: "Adam"
+  name: "AdamW"
   args:
-    lr: 5e-4
-    weight_decay: 1e-5
+    lr: 0.001
 scheduler:
   name: "StepLR"
   args:
     step_size: 1
-    gamma: 0.99
+    gamma: 0.95
 trainer:
   gpus: 1
   progress_bar_refresh_rate: 0
   max_epochs: 25
   deterministic: True
+  gradient_clip_val: 3.0
 vectors:
   name: null
+random:
+  seed: 42

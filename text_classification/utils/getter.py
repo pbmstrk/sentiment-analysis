@@ -19,6 +19,8 @@ def check_scheduler_args(func, name, args):
             ), f"{name} expects a value for {pname}"
 
 def get_optimizer(model, name, args, no_decay=("bias", "LayerNorm.weight")):
+    if not args:
+        args = {}
     opt = try_get_function(torch.optim, name)
     optimizer_grouped_parameters = [
         {

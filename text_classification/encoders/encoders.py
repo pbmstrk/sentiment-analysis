@@ -1,5 +1,6 @@
 import torch
 from torch.nn.utils.rnn import pad_sequence
+from typing import Optional
 
 from .base import VocabMixin, BaseEncoder, TargetEncodingMixin
 
@@ -9,8 +10,9 @@ class BasicEncoder(
     TargetEncodingMixin
 ):
 
-    def __init__(self, return_seq_lengths=False):
+    def __init__(self, return_seq_lengths=False, min_size_after_padding: Optional[int] = None):
         self.return_seq_lengths = return_seq_lengths
+        self.min_size_after_padding = min_size_after_padding
 
     def __call__(self, inputs, targets):
 
@@ -24,7 +26,12 @@ class BasicEncoder(
         seq_lengths = torch.tensor([len(t) for t in inputs])
 
         inputs = pad_sequence(inputs, batch_first=True)
-
+        if self.min_size_after_padding:
+            size_after_padding = inputs.size(-1)
+            if size_after_padding < self.min_size_after_padding:
+                diff = self.min_size_after_padding - size_after_padding
+                inputs = torch.cat((inputs, torch.zeros(inputs.size(0), diff)), dim=1)
+            
         if self.return_seq_lengths:
             return inputs.long(), targets.long(), seq_lengths
         
