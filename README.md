@@ -21,6 +21,8 @@ Scripts to run models on SST dataset are provided.
 git clone https://github.com/pbmstrk/text-classification.git
 cd text-classification
 pip install .
+# in order to use SpacyTokenizer, download model
+python -m spacy download en
 ```
 
 The configs for the scripts are configured using hydra, to install hydra as well run
