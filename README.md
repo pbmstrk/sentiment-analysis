@@ -15,6 +15,19 @@ The following models are implemented:
 
 Scripts to run models on SST dataset are provided.
 
+## Quick Start
+
+```
+git clone https://github.com/pbmstrk/text-classification.git
+cd text-classification
+pip install .
+```
+
+The configs for the scripts are configured using hydra, to install hydra as well run
+```
+pip install ".[scripts]"
+```
+
 ## TextCNN
 
 <p align="center">
