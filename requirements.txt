@@ -1,0 +1,5 @@
+# default packages
+pytorch_lightning>=1.0.3 
+spacy
+nltk 
+torch>=1.3
