@@ -17,7 +17,7 @@ Scripts to run models on SST dataset are provided.
 
 ## Quick Start
 
-```
+```bash
 git clone https://github.com/pbmstrk/text-classification.git
 cd text-classification
 pip install .
@@ -26,7 +26,7 @@ python -m spacy download en
 ```
 
 The configs for the scripts are configured using hydra, to install hydra as well run
-```
+```bash
 pip install ".[scripts]"
 ```
 
