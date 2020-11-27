@@ -35,7 +35,9 @@ class DataModule:
         if not self.val:
             raise ValueError
 
-        return DataLoader(self.val, batch_size=self.batch_size, collate_fn=self.collate_fn)
+        return DataLoader(
+            self.val, batch_size=self.batch_size, collate_fn=self.collate_fn
+        )
 
     def test_dataloader(self) -> DataLoader:
 

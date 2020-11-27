@@ -1,22 +1,21 @@
-import torch
-from torch.nn.utils.rnn import pad_sequence
 from typing import Optional
 
-from .base import VocabMixin, BaseEncoder, TargetEncodingMixin
+import torch
+from torch.nn.utils.rnn import pad_sequence
 
-class BasicEncoder(
-    BaseEncoder,
-    VocabMixin,
-    TargetEncodingMixin
-):
+from .base import BaseEncoder, TargetEncodingMixin, VocabMixin
 
-    def __init__(self, return_seq_lengths=False, min_size_after_padding: Optional[int] = None):
+
+class BasicEncoder(BaseEncoder, VocabMixin, TargetEncodingMixin):
+    def __init__(
+        self, return_seq_lengths: bool = False, min_size_after_padding: Optional[int] = None
+    ):
         self.return_seq_lengths = return_seq_lengths
         self.min_size_after_padding = min_size_after_padding
 
     def __call__(self, inputs, targets):
 
-        # allow input to also be list instead of nested list 
+        # allow input to also be list instead of nested list
         if not all(isinstance(inp, list) for inp in inputs):
             inputs = [inputs]
 
@@ -31,10 +30,10 @@ class BasicEncoder(
             if size_after_padding < self.min_size_after_padding:
                 diff = self.min_size_after_padding - size_after_padding
                 inputs = torch.cat((inputs, torch.zeros(inputs.size(0), diff)), dim=1)
-            
+
         if self.return_seq_lengths:
             return inputs.long(), targets.long(), seq_lengths
-        
+
         return inputs.long(), targets.long()
 
     def encode_inputs(self, inputs):
@@ -50,15 +49,10 @@ class BasicEncoder(
         return self(inputs=inputs, targets=targets)
 
 
-class TransformerEncoder(
-    BaseEncoder,
-    VocabMixin,
-    TargetEncodingMixin
-):
-
+class TransformerEncoder(BaseEncoder, VocabMixin, TargetEncodingMixin):
     def __call__(self, inputs, targets):
 
-        # allow input to also be list instead of nested list 
+        # allow input to also be list instead of nested list
         if not all(isinstance(inp, list) for inp in inputs):
             inputs = [inputs]
 
@@ -73,11 +67,14 @@ class TransformerEncoder(
 
         assert hasattr(self, "cls_token_index") and hasattr(self, "sep_token_index")
 
-        return [torch.tensor(
-            [self.cls_token_index]
-            + self.convert_token_to_ids(inp)
-            + [self.sep_token_index]
-        ) for inp in inputs]
+        return [
+            torch.tensor(
+                [self.cls_token_index]
+                + self.convert_token_to_ids(inp)
+                + [self.sep_token_index]
+            )
+            for inp in inputs
+        ]
 
     def encode_targets(self, targets):
         return torch.tensor(self.convert_targets(targets))
