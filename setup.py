@@ -2,8 +2,6 @@ import os
 
 from setuptools import find_packages, setup
 
-import text_classification
-
 PATH_ROOT = os.path.dirname(__file__)
 
 
@@ -31,11 +29,14 @@ def get_extras_require():
 
     return requirements
 
+NAME="text-classification"
+VERSION="0.1.0"
+AUTHOR="Paul Baumstark"
 
 setup(
-    name="text-classification",
-    version=text_classification.__version__,
-    author=text_classification.__author__,
+    name=NAME,
+    version=VERSION,
+    author=AUTHOR,
     packages=find_packages(exclude=("tests", "scripts")),
     install_requires=load_requirements(),
     extras_require=get_extras_require(),
