@@ -8,7 +8,7 @@ from .base import BaseEncoder, TargetEncodingMixin, VocabMixin
 
 class BasicEncoder(BaseEncoder, VocabMixin, TargetEncodingMixin):
     def __init__(
-        self, return_seq_lengths=False, min_size_after_padding: Optional[int] = None
+        self, return_seq_lengths: bool = False, min_size_after_padding: Optional[int] = None
     ):
         self.return_seq_lengths = return_seq_lengths
         self.min_size_after_padding = min_size_after_padding
