@@ -38,15 +38,15 @@ class TimeDistributedLSTM(nn.Module):
 
         return outputs
 
-class RNFFormatter(nn.Module):
 
+class RNFFormatter(nn.Module):
     def __init__(self, filter_width):
         super().__init__()
 
         self.filter_width = filter_width
 
     def forward(self, x):
-        
+
         sent_len = x.shape[1]
         chunks = []
         if sent_len - self.filter_width + 1 <= 1:
@@ -56,7 +56,8 @@ class RNFFormatter(nn.Module):
             chunk = chunk.unsqueeze(1)
             chunks.append(chunk)
         return torch.cat(chunks, 1)
-    
+
+
 class RNF(nn.Module):
 
     r"""
@@ -73,7 +74,7 @@ class RNF(nn.Module):
         embed_dropout: Dropout applied to the word embeddings
         dropout: Dropout applied to the output of the LSTM.
         embed_mat: Pre-trained word-embedddings. Size should match (input_size, embed_dim)
-        freeze_embed: Freeze embedding weights during training. 
+        freeze_embed: Freeze embedding weights during training.
 
     Example::
 

@@ -120,17 +120,18 @@ class EncoderLayer(nn.Module):
 
         return src
 
+
 class Encoder(nn.Module):
     def __init__(
         self,
-        input_size, 
+        input_size,
         hid_dim,
         n_layers,
         n_heads,
         pf_dim,
         dropout,
-        padding_idx = 0,
-        max_length = 284
+        padding_idx=0,
+        max_length=284,
     ):
         super().__init__()
 
@@ -152,7 +153,7 @@ class Encoder(nn.Module):
         return x_mask
 
     def forward(self, x):
-        
+
         pos = torch.arange(x.shape[1], device=x.device)
         x_mask = self.make_mask(x)
 
@@ -163,8 +164,9 @@ class Encoder(nn.Module):
         for layer in self.layers:
             x = layer(x, x_mask)
 
-        pooled_output = x.transpose(0,1)[0]
+        pooled_output = x.transpose(0, 1)[0]
         return x, pooled_output
+
 
 class TransformerWithClassifierHead(nn.Module):
 
@@ -206,8 +208,16 @@ class TransformerWithClassifierHead(nn.Module):
     ):
         super().__init__()
 
-        self.encoder = Encoder(input_size, hid_dim, n_layers, n_heads, pf_dim, dropout,
-                                padding_idx, max_length)
+        self.encoder = Encoder(
+            input_size,
+            hid_dim,
+            n_layers,
+            n_heads,
+            pf_dim,
+            dropout,
+            padding_idx,
+            max_length,
+        )
 
         self.clf_head = nn.Sequential(
             nn.Linear(hid_dim, mlp_dim),
@@ -219,7 +229,7 @@ class TransformerWithClassifierHead(nn.Module):
     def forward(self, batch):
 
         x, _ = batch
-        
+
         _, cls_output = self.encoder(x)
 
         x = self.clf_head(cls_output)

@@ -18,9 +18,9 @@ class NSE(nn.Module):
         num_class: Number of classes.
         n_units: Dimension of embedding and LSTM layers.
         mlp_dim: Dimension of hidden layer in classification head.
-        embed_mat: Pre-trained word-embedddings. 
+        embed_mat: Pre-trained word-embedddings.
         dropout: Dropout applied to classification head
-        freeze_embed: Freeze embedding weights during training. 
+        freeze_embed: Freeze embedding weights during training.
 
     Example::
 

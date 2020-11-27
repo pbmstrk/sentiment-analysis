@@ -1,12 +1,13 @@
-from typing import Union, List, Dict, Optional
 from abc import abstractmethod
+from collections import Counter, OrderedDict
+from typing import Dict, List, Optional, Union
 
 from text_classification.datasets import TextDataset
 
-from collections import Counter, OrderedDict
 
 def flatten(lst) -> List:
     return [item for sublist in lst for item in sublist]
+
 
 class BaseEncoder:
     @abstractmethod
@@ -16,8 +17,8 @@ class BaseEncoder:
     def unzip_batch(self, batch):
         return list(map(list, zip(*batch)))
 
-class VocabMixin:
 
+class VocabMixin:
     def add_vocab(
         self,
         data: Union[List[str], TextDataset, List[TextDataset]],
@@ -52,7 +53,7 @@ class VocabMixin:
     @property
     def num_tokens(self):
         return len(self.encoding)
-        
+
     def convert_token(self, token):
         assert hasattr(self, "encoding")
 
@@ -73,7 +74,8 @@ class VocabMixin:
         return self.encoding
 
     @staticmethod
-    def _process_dataset(data: Union[TextDataset, List[str], List[TextDataset]]
+    def _process_dataset(
+        data: Union[TextDataset, List[str], List[TextDataset]]
     ) -> Counter:
         if isinstance(data, TextDataset):
             list_of_vocab = flatten([example[0] for example in data])
@@ -101,8 +103,8 @@ class VocabMixin:
 
         self.encoding.update({tok: i for i, tok in enumerate(wordlist)})
 
-class TargetEncodingMixin:
 
+class TargetEncodingMixin:
     def add_target_encoding(self, target_encoding):
         self.target_encoding = target_encoding
 

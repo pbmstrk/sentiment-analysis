@@ -1,4 +1,3 @@
-# default packages
 pytorch_lightning>=1.0.3 
 spacy
 nltk 

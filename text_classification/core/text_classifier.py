@@ -11,7 +11,7 @@ class TextClassifier(pl.LightningModule):
         self,
         model: nn.Module,
         optimizer: Optional[Callable] = None,
-        scheduler: Optional[Callable] = None
+        scheduler: Optional[Callable] = None,
     ):
         super().__init__()
 
@@ -80,9 +80,11 @@ class TextClassifier(pl.LightningModule):
             try:
                 return self.model.get_optimizer()
             except AttributeError:
-                print("No optimizer is passed, and model not have an get_optimizer() method")
+                print(
+                    "No optimizer is passed, and model not have an get_optimizer() method"
+                )
                 raise
-    
+
         if hasattr(self, "schedule"):
             return [self.opt], [self.schedule]
 
