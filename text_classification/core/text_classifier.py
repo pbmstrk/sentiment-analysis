@@ -81,7 +81,7 @@ class TextClassifier(pl.LightningModule):
                 return self.model.get_optimizer()
             except AttributeError:
                 print(
-                    "No optimizer is passed, and model not have an get_optimizer() method"
+                    "No optimizer was passed, and model does not have a get_optimizer() method"
                 )
                 raise
 
