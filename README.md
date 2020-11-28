@@ -61,8 +61,6 @@ python scripts/nse/main.py
 
 ## Transformer
 
-[Attention is All You Need](https://arxiv.org/abs/1706.03762)
-
 <p align="center">
   <img src="img/transformer.png" height=300px/>
   <br>
